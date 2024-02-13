@@ -159,13 +159,13 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            join
            //end
            //wait((hwdata_q.size)==0);
-           $display($realtime,"item_done called");
+           //$display($realtime,"item_done called");
            seq_item_port.item_done(req);
            get = 1'b0;
           end
          end
        join_any
-       $display($realtime,"join_any");
+       //$display($realtime,"join_any");
        if(get)begin
          seq_item_port.item_done(req);
          get = 1'b0;
