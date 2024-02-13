@@ -7,7 +7,6 @@
 // -------------------------------------------------------------------------
 
 class AHB_UVC_master_transaction_c extends uvm_sequence_item;
-    `uvm_object_utils(AHB_UVC_master_transaction_c)
 
     // object constructor
     extern function new(string name = "AHB_UVC_master_transaction_c");
@@ -28,8 +27,6 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
 
     `uvm_object_utils_begin(AHB_UVC_master_transaction_c)
         `uvm_field_int(haddr,UVM_ALL_ON)
-        `uvm_field_int(hburst_type,UVM_ALL_ON)
-        `uvm_field_int(hsize_type,UVM_ALL_ON)
         `uvm_field_int(hwrite,UVM_ALL_ON)
         `uvm_field_array_int(hwdata,UVM_ALL_ON)
         `uvm_field_int(hrdata,UVM_ALL_ON)
