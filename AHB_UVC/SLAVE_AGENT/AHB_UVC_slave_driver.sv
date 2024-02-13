@@ -85,7 +85,7 @@ task AHB_UVC_slave_driver_c::run_phase(uvm_phase phase);
       end
       
       forever begin
-      @(slv_vif.hclk);
+      @(posedge slv_vif.hclk);
         seq_item_port.get_next_item(req);
         send_to_dut(req);
         seq_item_port.item_done();
@@ -101,11 +101,12 @@ endtask : run_phase
 
 task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
   
-  `uvm_info(get_type_name(), "Inside send_to_dut task", UVM_HIGH)
+  `uvm_info(get_type_name(), "Inside send_to_dut task", UVM_NONE)
   req.print();
     
   if(req.htrans_type == IDLE || req.htrans_type == BUSY)
     begin
+    `uvm_info(get_name(),"--------------------------------------------in side htrans_type =IDLE or BUSY-----------------------",UVM_NONE);
       slv_vif.Hready_out <= 1;
       slv_vif.Hresp      <= hresp_enum'(OKAY); 
       slv_vif.Hrdata     <= req.hrdata;
@@ -113,15 +114,17 @@ task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
 
   else if(req.hresp_type) 
     begin
+    `uvm_info(get_name(),"--------------------------------------------in side hresp_type =1-----------------------",UVM_NONE);
       slv_vif.Hresp       <= hresp_enum'(ERROR);
       slv_vif.Hrdata      <= '0;
+      slv_vif.Hready_out  <= '0;
+      @(posedge slv_vif.hclk);
       slv_vif.Hready_out  <= '1;
-      @(slv_vif.hclk)
-      slv_vif.Hready_out      <= '1;
-      slv_vif.Hresp       <= hresp_enum'(OKAY);
+      slv_vif.Hresp       <= hresp_enum'(ERROR);
     end
   else
     begin
+    `uvm_info(get_name(),"--------------------------------------------in side else begin -----------------------",UVM_NONE);
       slv_vif.Hready_out    <= req.hready_out;
       slv_vif.Hresp        <= req.hresp_type;
       slv_vif.Hrdata       <= req.hrdata;
@@ -129,9 +132,11 @@ task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
     end
 
    if(!req.hready_out && !slv_vif.Hresp) begin
+    `uvm_info(get_name(),"--------------------------------------------in side iffffff -----------------------",UVM_NONE);
     slv_vif.Hready_out <= '1;
     end
    else if(slv_vif.Hresp && slv_vif.Htrans==htrans_enum'(IDLE))
+    `uvm_info(get_name(),"--------------------------------------------in side iffffff else  -----------------------",UVM_NONE);
     slv_vif.Hready_out <= '1;
 endtask
 

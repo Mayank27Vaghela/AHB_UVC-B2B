@@ -11,19 +11,19 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
     // object constructor
     extern function new(string name = "AHB_UVC_slave_transaction_c");
 
-    rand bit [(`HADDR_WIDTH -1):0] haddr;
-    rand hburst_enum          hburst_type;
-    rand hsize_enum            hsize_type;
-    rand bit                       hwrite;
-    rand bit [(`HWDATA_WIDTH -1):0]    slv_hwdata;
+    bit [(`HADDR_WIDTH -1):0] haddr;
+    hburst_enum          hburst_type;
+    hsize_enum            hsize_type;
+    bit                       hwrite;
+    bit [(`HWDATA_WIDTH -1):0]    slv_hwdata;
     bit[(`HRDATA_WIDTH -1):0]            hrdata;
-    hresp_enum                 hresp_type;
+    rand hresp_enum                 hresp_type;
     rand int                    incr_size;
 
-    rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
-    rand htrans_enum         htrans_type;
-         bit hready_out;
-         bit hready_in;
+   // rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
+    htrans_enum         htrans_type;
+    bit hready_out;
+   // bit hready_in;
 
 
       `uvm_object_utils_begin(AHB_UVC_slave_transaction_c)
@@ -34,6 +34,7 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
         `uvm_field_enum(hburst_enum,hburst_type,UVM_ALL_ON)
         `uvm_field_enum(hsize_enum,hsize_type,UVM_ALL_ON)
         `uvm_field_enum(htrans_enum,htrans_type,UVM_ALL_ON)
+        `uvm_field_enum(hresp_enum,hresp_type,UVM_ALL_ON)
     `uvm_object_utils_end
 
 

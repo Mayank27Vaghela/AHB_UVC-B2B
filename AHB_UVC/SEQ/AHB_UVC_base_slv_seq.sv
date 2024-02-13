@@ -55,7 +55,7 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
   addr = rd_req.haddr;
   addr_offset = addr - ((int'(addr/(`HWDATA_WIDTH/8)))*(`HWDATA_WIDTH/8));
 
-  rd_req.print();
+ // rd_req.print();
 
   if(!rd_req.hwrite && !rd_req.hresp_type) begin
 
@@ -76,7 +76,7 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
 
     end
 
-    rd_req.print();
+  //  rd_req.print();
 
   end
     
@@ -103,7 +103,7 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
      trans_q.delete(0);  
   end
   $display("this is the size ------------------- %0d",$size(trans_q));
-  wr_req.print();
+//  wr_req.print();
 
   if($size(trans_q)==2) begin
 
@@ -111,7 +111,7 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
     addr_offset = addr - ((int'(addr/(`HWDATA_WIDTH/8)))*(`HWDATA_WIDTH/8));
 
     `uvm_info("SLAVE SEQUENCE","THIS IS BOTH ADDR AND DATA PHASE RECEIVED TRANSECTION",UVM_MEDIUM)
-    wr_req.print();
+  //  wr_req.print();
   
     if(trans_q[0].hwrite && !trans_q[0].hresp_type) begin 
 
@@ -131,7 +131,7 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
       end
     
       `uvm_info("SLAVE SEQUENCE","THIS IS SLAVE SENDING TRANSECTION",UVM_MEDIUM)       
-      wr_req.print();
+    //  wr_req.print();
     									        
       trans_q.delete(0);
 

@@ -36,7 +36,7 @@ task AHB_UVC_slv_seq_c::body();
    p_sequencer.slv_mem.item_fifo.get(req);
    read(req);   
     
-    assert(req.randomize() with {hresp_type dist{OKAY:=8,ERROR:=2};});
+    assert(req.randomize() with {hresp_type dist{OKAY:=5,ERROR:=5};});
 
   `uvm_send(req);
   end
