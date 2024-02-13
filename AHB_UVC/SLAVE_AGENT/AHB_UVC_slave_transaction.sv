@@ -24,7 +24,24 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
     rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
     rand htrans_enum         htrans_type;
          bit hready_out;
-         bit hready_in; 
+         bit hready_in;
+
+
+      `uvm_object_utils_begin(AHB_UVC_master_transaction_c)
+        `uvm_field_int(haddr,UVM_ALL_ON)
+        `uvm_field_int(hburst_type,UVM_ALL_ON)
+        `uvm_field_int(hsize_type,UVM_ALL_ON)
+        `uvm_field_int(hwrite,UVM_ALL_ON)
+        `uvm_field_int(hwdata,UVM_ALL_ON)
+        `uvm_field_int(hrdata,UVM_ALL_ON)
+        `uvm_field_enum(hburst_enum,hburst_type,UVM_ALL_ON)
+        `uvm_field_enum(hsize_enum,hsize_type,UVM_ALL_ON)
+        `uvm_field_enum(htrans_enum,htrans_type,UVM_ALL_ON)
+    `uvm_object_utils_end
+
+
+    
+ 
 endclass : AHB_UVC_slave_transaction_c
 
 //////////////////////////////////////////////////////////////////

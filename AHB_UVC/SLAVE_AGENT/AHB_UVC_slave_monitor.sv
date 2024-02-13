@@ -105,6 +105,7 @@ task AHB_UVC_slave_monitor_c::addr_phase();
 
   AHB_UVC_slave_transaction_c trans;
 
+  `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
   if(slv_vif.Hready_in && slv_vif.hresetn)begin
       ahb_trans.haddr = slv_vif.Haddr;      
       ahb_trans.hwrite = slv_vif.Hwrite;      
@@ -121,6 +122,7 @@ task AHB_UVC_slave_monitor_c::data_phase();
       
   AHB_UVC_slave_transaction_c trans;
 
+  `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_HIGH)
   @(slv_vif.hclk);
   
   if(slv_vif.Hready_in && slv_vif.hresetn)begin

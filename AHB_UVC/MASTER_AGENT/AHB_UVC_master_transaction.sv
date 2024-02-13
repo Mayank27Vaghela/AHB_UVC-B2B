@@ -24,7 +24,20 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
     rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
     rand htrans_enum         htrans_type[];
 
-  
+
+
+    `uvm_object_utils_begin(AHB_UVC_master_transaction_c)
+        `uvm_field_int(haddr,UVM_ALL_ON)
+        `uvm_field_int(hburst_type,UVM_ALL_ON)
+        `uvm_field_int(hsize_type,UVM_ALL_ON)
+        `uvm_field_int(hwrite,UVM_ALL_ON)
+        `uvm_field_array_int(hwdata,UVM_ALL_ON)
+        `uvm_field_int(hrdata,UVM_ALL_ON)
+        `uvm_field_enum(hburst_enum,hburst_type,UVM_ALL_ON)
+        `uvm_field_enum(hsize_enum,hsize_type,UVM_ALL_ON)
+        `uvm_field_array_enum(htrans_enum,htrans_type,UVM_ALL_ON)
+    `uvm_object_utils_end
+     
   //constraints
 
     /* constraint for giving value to hburst */
