@@ -91,9 +91,9 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
     super.run_phase(phase);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
     first_beat  = 1'b1;
-    $display("monitor");
+    //$display("monitor");
     forever begin
-       $display("in monitor");
+       //$display("in monitor");
        trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
        @(posedge uvc_if.hclk);
        i++;
@@ -114,12 +114,14 @@ task AHB_UVC_master_monitor_c::address_phase();
   trans_h.hwrite      = uvc_if.Hwrite;
   trans_h.hburst_type = hburst_enum'(uvc_if.Hburst);
   trans_h.hsize_type  = hsize_enum'(uvc_if.Hsize);
+  $display("master monitor trans_h = %p",trans_h);
   trans_q.push_back(trans_h);
   first_beat = 1'b0;
-  $display("trans_q = %p",trans_q);
+  //$display("trans_q = %p",trans_q);
 endtask : address_phase
 
 task AHB_UVC_master_monitor_c::data_phase();
   //hwdata_q.push_back(uvc_if.Hwdata);
   trans_q[i-1].hwdata[i-1] = uvc_if.Hwdata;
+  $display("");
 endtask : data_phase
