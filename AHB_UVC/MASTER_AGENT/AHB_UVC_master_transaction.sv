@@ -38,12 +38,13 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
   //constraints
 
     /* constraint for giving value to hburst */
-    constraint transfer_num { (hburst_type == SINGLE) -> beat_cnt ==  1;
+    /*constraint transfer_num { (hburst_type == SINGLE) -> beat_cnt ==  1;
                               ((hburst_type == INCR4) ||(hburst_type == WRAP4)) -> beat_cnt == 4;  
                                ((hburst_type == INCR8) ||(hburst_type == WRAP8)) -> beat_cnt == 8;
                                 ((hburst_type == INCR16) ||(hburst_type == WRAP16)) -> beat_cnt == 16;
                             }
-    
+   */
+
     /* Constraint for allined address boundary */  
     constraint addr{haddr%(1<<hsize_type) ==0;}
 
