@@ -28,7 +28,7 @@ class AHB_UVC_transaction_c extends uvm_sequence_item;
   //constraints
 
     /* constraint for giving value to hburst */
-    constraint transfer_num { (hburst_type == SINGLE) -> beat_cnt ==  1;
+/*   constraint transfer_num { (hburst_type == SINGLE) -> beat_cnt ==  1;
                               ((hburst_type == INCR4) ||(hburst_type == WRAP4)) -> beat_cnt == 4;  
                                ((hburst_type == INCR8) ||(hburst_type == WRAP8)) -> beat_cnt == 8;
                                 ((hburst_type == INCR16) ||(hburst_type == WRAP16)) -> beat_cnt == 16;
@@ -37,8 +37,6 @@ class AHB_UVC_transaction_c extends uvm_sequence_item;
     /* Constraint for allined address boundary */  
     constraint addr{haddr%(1<<hsize_type) ==0;}
 
-    /* constraint for 1k address boundary  */
-    constraint addr_boundary_limit{ haddr%1024 + ((1<<hsize_type)*beat_cnt) <= 1024; }
     
     //hsize should be less than data width
 
@@ -52,6 +50,8 @@ class AHB_UVC_transaction_c extends uvm_sequence_item;
 			                  if(hburst_type==INCR8  || hburst_type==WRAP8)  hwdata.size==8;
                   			if(hburst_type==INCR16 || hburst_type==WRAP16) hwdata.size==16;
                                   }
+    /* constraint for 1k address boundary  */
+    constraint addr_boundary_limit{ haddr%1024 + ((1<<hsize_type)*hwdata.size()) <= 1024; }
  
     constraint fixed_htrans{ htrans_type.size() == hwdata.size(); 
                                     htrans_type[0] == NONSEQ;
