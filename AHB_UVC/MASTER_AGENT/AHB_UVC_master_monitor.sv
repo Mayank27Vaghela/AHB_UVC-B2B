@@ -18,12 +18,6 @@ class AHB_UVC_master_monitor_c extends uvm_monitor;
     //transaction handle
     AHB_UVC_master_transaction_c trans_h;
 
-    //queue to store wdata
-    AHB_UVC_master_transaction_c hwdata_q[$];
-
-    //queue to store address
-    AHB_UVC_master_transaction_c trans_q[$];
-
     //first beat
     bit first_beat;
 
@@ -67,7 +61,8 @@ function void AHB_UVC_master_monitor_c::build_phase(uvm_phase phase);
     `uvm_info(get_type_name(), "build phase", UVM_HIGH)
     item_collected_port = new("item_collected_port",this);
     if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
-      `uvm_error(get_type_name(),"NOt able to get the interface");
+      `uvm_error(get_type_name(),"Not able to get the interface");
+    trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
@@ -91,37 +86,34 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
     super.run_phase(phase);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
     first_beat  = 1'b1;
-    //$display("monitor");
     forever begin
-       //$display("in monitor");
        trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
        @(posedge uvc_if.hclk);
-       i++;
+       ++i;
        fork
          address_phase();
          begin
-           if(!first_beat)
-             data_phase();
+            if(!first_beat && uvc_if.Hready_out)begin
+              data_phase();
+            end
          end
        join_none
     end
 endtask : run_phase
 
 task AHB_UVC_master_monitor_c::address_phase();
-  //trans_h.htrans_type = htrans_enum'(uvc_if.Htrans[0]);
-  //haddr_q.push_back(uvc_if.Haddr);
   trans_h.haddr       = uvc_if.Haddr;
   trans_h.hwrite      = uvc_if.Hwrite;
   trans_h.hburst_type = hburst_enum'(uvc_if.Hburst);
   trans_h.hsize_type  = hsize_enum'(uvc_if.Hsize);
-  $display("master monitor trans_h = %p",trans_h);
-  trans_q.push_back(trans_h);
   first_beat = 1'b0;
-  //$display("trans_q = %p",trans_q);
 endtask : address_phase
 
 task AHB_UVC_master_monitor_c::data_phase();
-  //hwdata_q.push_back(uvc_if.Hwdata);
-  trans_q[i-1].hwdata[i-1] = uvc_if.Hwdata;
-  $display("");
+  trans_h.hwdata = '{uvc_if.Hwdata};
+
+  if(uvc_if.Hready_out)
+     item_collected_port.write(trans_h);
+  $display("master monitor after data added");
+  trans_h.print();
 endtask : data_phase

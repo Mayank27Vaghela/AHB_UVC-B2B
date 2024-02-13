@@ -30,6 +30,8 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
 
   bit get;
 
+  int no_of_beat;
+
   // component constructor
   extern function new(string name = "AHB_UVC_master_driver_c", uvm_component parent);
 
@@ -108,6 +110,9 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            get = 1;
            seq_item_port.get_next_item(req);
            //$display($realtime,"get_next_item");
+           $display("Master trans_h");
+           req.print();
+           $display;
            first_beat = 1'b1;
            beat = 1;
            //forever begin
@@ -117,16 +122,17 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            l_addr = req.haddr;
            //$display("initial haddr = %0h",l_addr);
            //forever begin
-           bytes_in_burst = (2**(int'(req.hsize_type)))*(req.beat_cnt);
+           no_of_beat = req.htrans_type.size(); 
+           bytes_in_burst = (2**(int'(req.hsize_type)))*(no_of_beat);
            //$display("bytes_in_burst = %0d",bytes_in_burst);
            starting_addr = ((int'(req.haddr/(bytes_in_burst)))*(bytes_in_burst));
-           wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(req.beat_cnt);
-           //$display("the the  = %0h",(req.haddr % ((req.beat_cnt)*(bytes_in_burst))));
+           wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(no_of_beat);
+           //$display("the the  = %0h",(req.haddr % ((req.no_of_beat)*(bytes_in_burst))));
            //$display("starting add = %0h",starting_addr);
            //$display("wrap_addr add = %0h",wrap_addr);
            fork
              begin
-               repeat(req.beat_cnt)begin
+               repeat(no_of_beat)begin
                  @(posedge uvc_if.hclk);
                  //$display("first_beat = %0d",first_beat);
                  if(!beat)begin
@@ -146,7 +152,7 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
              end
              begin
               //begin
-               repeat(req.beat_cnt+1)begin
+               repeat(no_of_beat+1)begin
                 @(posedge uvc_if.hclk);
                 if(!first_beat)begin
                     data_phase();
