@@ -11,6 +11,7 @@ class AHB_UVC_sanity_test extends AHB_UVC_base_test_c;
 
   //Handle of the sequence
   AHB_UVC_master_wr_seq_c seq_h;
+  AHB_UVC_slv_seq_c slv_seq_h;
 
   // Test constructor
   extern function new(string name = "AHB_UVC_sanity_test", uvm_component parent);
@@ -45,6 +46,7 @@ function void AHB_UVC_sanity_test::build_phase(uvm_phase phase);
   super.build_phase(phase);
   `uvm_info(get_type_name(), "build phase", UVM_HIGH)
   seq_h = AHB_UVC_master_wr_seq_c::type_id::create("seq_h");
+  slv_seq_h = AHB_UVC_slv_seq_c::type_id::create("slv_seq_h");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
@@ -68,7 +70,10 @@ task AHB_UVC_sanity_test::run_phase(uvm_phase phase);
     super.run_phase(phase);
     phase.raise_objection(this);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
-    seq_h.start(ahb_main_env_h.ahb_env_h[0].ahb_master_agent_h.ahb_master_seqr_h);
+    fork
+      seq_h.start(ahb_main_env_h.ahb_env_h[0].ahb_master_agent_h.ahb_master_seqr_h);
+      slv_seq_h.start(ahb_main_env_h.ahb_env_h[1].ahb_slave_agent_h.ahb_slave_seqr_h);
+    join_any
     phase.phase_done.set_drain_time(this,200ns);
     //#200ns;
     phase.drop_objection(this);
