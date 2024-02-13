@@ -33,8 +33,7 @@ endclass : AHB_UVC_base_slv_seq
 function AHB_UVC_base_slv_seq::new(string name="AHB_UVC_base_slv_seq");
 
   super.new(name);
-  slv_mem = new();
-
+  slv_mem = AHB_UVC_slave_memory::type_id::create("slv_mem",null);
 endfunction : new
 
 //body method

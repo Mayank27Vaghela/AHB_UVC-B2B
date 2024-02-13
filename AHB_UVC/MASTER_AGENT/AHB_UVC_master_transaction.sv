@@ -17,7 +17,7 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
     rand hsize_enum            hsize_type;
     rand bit                       hwrite;
     rand bit [(`HWDATA_WIDTH -1):0]    hwdata[];
-    bit[(`HRDATA_WIDTH -1):0]            Hrdata;
+    bit[(`HRDATA_WIDTH -1):0]            hrdata;
     hresp_enum                 hresp_type;
     rand int                    incr_size;
 

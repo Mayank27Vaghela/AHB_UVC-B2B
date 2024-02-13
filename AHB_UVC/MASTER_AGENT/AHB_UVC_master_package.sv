@@ -9,7 +9,7 @@ package AHB_UVC_master_package;
   `include "AHB_UVC_defines.sv"
   `include "AHB_UVC_common_defines.sv"
 
-  `include "AHB_UVC_transaction.sv"  
+  `include "AHB_UVC_master_transaction.sv"  
 
   /** Agent configuration file*/
   `include "AHB_UVC_master_config.sv"
