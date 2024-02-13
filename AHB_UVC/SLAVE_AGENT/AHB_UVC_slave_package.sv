@@ -11,10 +11,10 @@ package AHB_UVC_slave_package;
   /** Slave files*/
   `include "AHB_UVC_slave_transaction.sv"
   `include "AHB_UVC_slave_config.sv"
+  `include "AHB_UVC_slave_memory.sv"
   `include "AHB_UVC_slave_sequencer.sv"
   `include "AHB_UVC_slave_driver.sv"
   `include "AHB_UVC_slave_monitor.sv"
-  `include "AHB_UVC_slave_memory.sv"
   `include "AHB_UVC_slave_coverage.sv"
   `include "AHB_UVC_slave_agent.sv"
 

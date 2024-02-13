@@ -22,7 +22,7 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
     rand int                    incr_size;
 
     rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
-    rand htrans_enum         htrans_type[];
+    rand htrans_enum         htrans_type;
          bit hready_out;
          bit hready_in; 
 endclass : AHB_UVC_slave_transaction_c

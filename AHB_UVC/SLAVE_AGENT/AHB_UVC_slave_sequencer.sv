@@ -8,7 +8,8 @@
 
 class AHB_UVC_slave_sequencer_c extends uvm_sequencer#(AHB_UVC_slave_transaction_c);
   `uvm_component_utils(AHB_UVC_slave_sequencer_c)    
-
+  
+  AHB_UVC_slave_memory slv_mem;
   // component constructor
   extern function new(string name = "AHB_UVC_slave_sequencer_c", uvm_component parent);
 

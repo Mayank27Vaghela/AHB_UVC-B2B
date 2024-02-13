@@ -13,7 +13,8 @@ class AHB_UVC_base_slv_seq extends uvm_sequence #(AHB_UVC_slave_transaction_c);
 
   `uvm_object_param_utils(AHB_UVC_base_slv_seq)
 
-  AHB_UVC_slave_memory slv_mem;
+
+  `uvm_declare_p_sequencer(AHB_UVC_slave_sequencer_c)
 
   AHB_UVC_slave_transaction_c trans_q[$];
 
@@ -33,7 +34,7 @@ endclass : AHB_UVC_base_slv_seq
 function AHB_UVC_base_slv_seq::new(string name="AHB_UVC_base_slv_seq");
 
   super.new(name);
-  slv_mem = new();
+//  p_sequencer.slv_mem =AHB_UVC_slave_memory::type_id::create("slv_mem",null); ;
 
 endfunction : new
 
@@ -63,8 +64,8 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
 
       for(int i=0;i<(2**rd_req.hsize_type);i++) begin
 
-        data[(addr_offset*8) +: 8] = slv_mem.mem[addr];
-        $display("THE DATA ---------%0h",slv_mem.mem[addr]);
+        data[(addr_offset*8) +: 8] = p_sequencer.slv_mem.mem[addr];
+        $display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
 	addr_offset++;
         addr++;
 
@@ -119,8 +120,8 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
         
       	for(int i=0;i<(2**trans_q[0].hsize_type);i++) begin
             
-          slv_mem.mem[addr] = trans_q[1].slv_hwdata[(addr_offset*8) +: 8];
-          $display("THE DATA ---------%0h",slv_mem.mem[addr]);
+          p_sequencer.slv_mem.mem[addr] = trans_q[1].slv_hwdata[(addr_offset*8) +: 8];
+          $display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
 	  addr_offset++;
           addr++;
 
