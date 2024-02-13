@@ -62,6 +62,7 @@ function void AHB_UVC_slave_agent_c::build_phase(uvm_phase phase);
 	  ahb_slave_cov_h = AHB_UVC_slave_coverage_c::type_id::create("ahb_slave_cov_h", this);
   end
 	ahb_slave_mon_h = AHB_UVC_slave_monitor_c::type_id::create("ahb_slave_mon_h", this);
+   ahb_slave_seqr_h.slv_mem = ahb_mem_h;
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////

@@ -54,10 +54,11 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
                                   }
  
     constraint fixed_htrans{ htrans_type.size() == hwdata.size(); 
-                                    htrans_type[0] == NONSEQ;
-				    
-				    foreach(htrans_type[i])
-				    { if(i>0) htrans_type[i] == SEQ;}}
+                             htrans_type[0] == NONSEQ;	    
+				                     foreach(htrans_type[i])
+				                     { if(i>0) htrans_type[i] == SEQ;}}
+
+
 endclass : AHB_UVC_master_transaction_c
 
 //////////////////////////////////////////////////////////////////

@@ -127,6 +127,7 @@ task AHB_UVC_slave_monitor_c::data_phase();
     ahb_trans.slv_hwdata      = slv_vif.Hwdata;
     ahb_trans.hrdata      = slv_vif.Hrdata;
     ahb_trans.hresp_type  = hresp_enum'(slv_vif.Hresp); 
+    ahb_trans.hready_out  = slv_vif.Hready_out;
     //ahb_trans.data_phase = 1'b1;
 
  //   mon_ap_mem.write(ahb_trans);

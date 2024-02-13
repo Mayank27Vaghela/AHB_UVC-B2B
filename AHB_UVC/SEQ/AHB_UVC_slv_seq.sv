@@ -32,8 +32,8 @@ endfunction : new
 task AHB_UVC_slv_seq_c::body();
   
   forever begin
-   slv_mem.item_collected_fifo.get(req);
-   write(req);
+   p_sequencer.slv_mem.item_fifo.get(req);
+   p_sequencer.slv_mem.item_fifo.get(req);
    read(req);   
     
     assert(req.randomize() with {hresp_type dist{OKAY:=8,ERROR:=2};});
