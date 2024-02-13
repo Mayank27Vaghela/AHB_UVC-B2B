@@ -6,7 +6,7 @@
 // Developers   : 
 // -------------------------------------------------------------------------
 
-class AHB_UVC_master_sequencer_c extends uvm_sequencer#(AHB_UVC_transaction_c);
+class AHB_UVC_master_sequencer_c extends uvm_sequencer#(AHB_UVC_master_transaction_c);
   `uvm_component_utils(AHB_UVC_master_sequencer_c)    
 
   // component constructor

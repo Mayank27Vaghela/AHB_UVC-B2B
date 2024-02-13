@@ -6,13 +6,13 @@
 // Developers   : 
 // -------------------------------------------------------------------------
 
-class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_transaction_c);
+class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
   `uvm_component_utils(AHB_UVC_master_driver_c)    
 
   //Instance of the AHB interface
   virtual AHB_UVC_interface uvc_if;
   
-  AHB_UVC_transaction_c ahb_trans_h;
+  AHB_UVC_master_transaction_c ahb_trans_h;
   
   bit[(`HADDR_WIDTH -1):0] hwdata_q[$]; 
   htrans_enum              htrans_q[$]; 

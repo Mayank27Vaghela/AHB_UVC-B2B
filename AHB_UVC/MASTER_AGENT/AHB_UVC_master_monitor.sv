@@ -10,19 +10,19 @@ class AHB_UVC_master_monitor_c extends uvm_monitor;
     `uvm_component_utils(AHB_UVC_master_monitor_c)    
 
     // monitor for master coverage and scoreboard connection
-    uvm_analysis_port#(AHB_UVC_transaction_c) item_collected_port;
+    uvm_analysis_port#(AHB_UVC_master_transaction_c) item_collected_port;
 
     //interface instance
     virtual AHB_UVC_interface uvc_if;
 
     //transaction handle
-    AHB_UVC_transaction_c trans_h;
+    AHB_UVC_master_transaction_c trans_h;
 
     //queue to store wdata
-    AHB_UVC_transaction_c hwdata_q[$];
+    AHB_UVC_master_transaction_c hwdata_q[$];
 
     //queue to store address
-    AHB_UVC_transaction_c trans_q[$];
+    AHB_UVC_master_transaction_c trans_q[$];
 
     //first beat
     bit first_beat;
@@ -94,7 +94,7 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
     $display("monitor");
     forever begin
        $display("in monitor");
-       trans_h = AHB_UVC_transaction_c::type_id::create("trans_h");
+       trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
        @(posedge uvc_if.hclk);
        i++;
        fork
