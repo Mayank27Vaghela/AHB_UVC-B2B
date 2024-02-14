@@ -101,13 +101,8 @@ endtask : run_phase
 
 task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
   
-<<<<<<< HEAD
   `uvm_info(get_type_name(), "Inside send_to_dut task", UVM_NONE)
  // req.print();
-=======
-  `uvm_info(get_type_name(), "Inside send_to_dut task", UVM_HIGH)
-  //req.print();
->>>>>>> e2e16f98a35fef52d626259a6eb82d64df476775
     
   if(req.htrans_type == IDLE || req.htrans_type == BUSY)
     begin

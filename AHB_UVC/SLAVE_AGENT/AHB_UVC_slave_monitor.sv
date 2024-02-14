@@ -107,7 +107,7 @@ task AHB_UVC_slave_monitor_c::addr_phase();
 
   `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
   if(slv_vif.Hready_in && slv_vif.hresetn)begin
-      #1;
+      #2;
       ahb_trans.haddr = slv_vif.Haddr;      
       ahb_trans.hwrite = slv_vif.Hwrite;      
       ahb_trans.hburst_type = hburst_enum'(slv_vif.Hburst);
@@ -117,22 +117,23 @@ task AHB_UVC_slave_monitor_c::addr_phase();
      //ahb_trans.address_phase = 1'b1;
       
       mon_ap_mem.write(ahb_trans);
-      `uvm_info(get_name(),$sformatf("Slave monitor addrt phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
+  //    `uvm_info(get_name(),$sformatf("Slave monitor addrt phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
   end
 endtask : addr_phase
 
 task AHB_UVC_slave_monitor_c::data_phase();
       
-  AHB_UVC_slave_transaction_c trans;
+ // AHB_UVC_slave_transaction_c trans;
 
-  `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_HIGH)
   @(posedge slv_vif.hclk);
-  
+  `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_NONE)
+  #1;//so that write method is not called priore to this assignments done in data phase 
   if(slv_vif.Hready_in && slv_vif.hresetn)begin
-    ahb_trans.slv_hwdata      = slv_vif.Hwdata;
+    ahb_trans.slv_hwdata  = slv_vif.Hwdata;
     ahb_trans.hrdata      = slv_vif.Hrdata;
     ahb_trans.hresp_type  = hresp_enum'(slv_vif.Hresp); 
     ahb_trans.hready_out  = slv_vif.Hready_out;
+    //`uvm_info(get_name(),$sformatf("Slave monitor data phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
     //ahb_trans.data_phase = 1'b1;
 
  //   mon_ap_mem.write(ahb_trans);

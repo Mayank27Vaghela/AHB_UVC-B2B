@@ -109,10 +109,11 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
           forever begin
            get = 1;
            seq_item_port.get_next_item(req);
-           req.print();
+        //   req.print();
            //$display($realtime,"get_next_item");
            $display("Master trans_h");
-           req.print();
+      `uvm_info(get_name(),$sformatf(" addrt phase print :\n %s",req.sprint()),UVM_NONE)
+          // req.print();
            $display;
            first_beat = 1'b1;
            beat = 1;

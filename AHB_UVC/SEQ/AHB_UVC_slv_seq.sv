@@ -43,11 +43,7 @@ task AHB_UVC_slv_seq_c::body();
    write(req);
    read(req);   
     
-<<<<<<< HEAD
-    assert(req.randomize() with {hresp_type dist{OKAY:=7,ERROR:=3};});
-=======
-    assert(req.randomize() with {hresp_type dist{OKAY:=0,ERROR:=5};});
->>>>>>> e2e16f98a35fef52d626259a6eb82d64df476775
+    assert(req.randomize() with {hresp_type dist{OKAY:=10,ERROR:=0};});
 
   `uvm_send(req);
   end

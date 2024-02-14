@@ -24,4 +24,11 @@ interface AHB_UVC_interface(input logic hclk , hresetn);
   logic Hready_in;
   logic Hready_out;
   logic Hresp;
+
+  
+  
+
+
+
+
 endinterface : AHB_UVC_interface
