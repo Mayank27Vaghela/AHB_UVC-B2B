@@ -114,6 +114,6 @@ task AHB_UVC_master_monitor_c::data_phase();
 
   if(uvc_if.Hready_out)
      item_collected_port.write(trans_h);
-  $display("master monitor after data added");
-  trans_h.print();
+  //$display("master monitor after data added");
+  //trans_h.print();
 endtask : data_phase

@@ -12,7 +12,7 @@ lib:
 
 #To compile the code
 comp:
-	vlog -mfcu $(PKG) $(TOP) $(INCLUDE)
+	vlog $(PKG) $(TOP) $(INCLUDE)
 
 #To run the simulation in questasim
 sim: comp 
@@ -21,3 +21,6 @@ sim: comp
 #To run the simulation in command prompt
 sim_c:comp
 	vsim $(TOP_N) -c -do "do runsim.do" +UVM_TESTNAME=AHB_UVC_sanity_test 
+	
+#+uvm_set_verbosity=uvm_test_top.ahb_main_env_h.ahb_env_h[0].ahb_master_agent_h.ahb_master_drv_h,UVM_HIGH
+	

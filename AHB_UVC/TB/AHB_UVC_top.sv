@@ -28,14 +28,6 @@ import uvm_pkg::*;
     hresetn = 1;
   end
 
-  initial begin
-    uvc_if.Hready_out = 1'b1;
-    #35;
-    uvc_if.Hready_out = 1'b0;
-    #10;
-    uvc_if.Hready_out = 1'b1;
-  end
-
   assign uvc_if.Hready_in = uvc_if.Hready_out;
 
 	//interface handle declaration
