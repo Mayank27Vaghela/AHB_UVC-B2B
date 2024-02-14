@@ -9,13 +9,14 @@
 `timescale 10ns/1ps
 `include "AHB_UVC_defines.sv"
 `include "AHB_UVC_common_defines.sv"
-import AHB_UVC_package::*;
 `include "AHB_UVC_interface.sv"
 `include "AHB_UVC_checker.sv"
 module AHB_UVC_top;
 
 import uvm_pkg::*;
 `include "uvm_macros.svh"
+
+import AHB_UVC_package::*;
 
   bit hclk;
   bit hresetn;

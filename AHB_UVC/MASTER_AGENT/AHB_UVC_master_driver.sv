@@ -109,8 +109,6 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
           forever begin
            get = 1;
            seq_item_port.get_next_item(req);
-           $display("Master Driver");
-           $display("beat_cnt = %0d",req.beat_cnt);
            req.print();
            //$display($realtime,"get_next_item");
            $display("Master trans_h");
@@ -137,10 +135,11 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
              begin
                repeat(no_of_beat)begin
                  @(posedge uvc_if.hclk);
+                 //$display($realtime,"uvc_if.Hresp = %0d",uvc_if.Hresp);
                  //$display("first_beat = %0d",first_beat);
                  if(!uvc_if.Hresp)begin
                    if(!beat)begin
-                     $display("Inside the beatt...");
+                     //$display($realtime,"Inside the beatt...");
                      ahb_trans_h.haddr = address();
                      l_addr = ahb_trans_h.haddr;
                    end
@@ -153,8 +152,8 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
                    address_phase();
                  end
                  else begin
-                    $display("ELSE ERROR RESP");
-                   @(posedge uvc_if.hclk)
+                    //$display($realtime,"ELSE ERROR RESP");
+                   //@(posedge uvc_if.hclk)
                      uvc_if.Htrans   <= '0;
                      break;
                  end
