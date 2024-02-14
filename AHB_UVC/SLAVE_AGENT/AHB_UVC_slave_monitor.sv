@@ -107,15 +107,17 @@ task AHB_UVC_slave_monitor_c::addr_phase();
 
   `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
   if(slv_vif.Hready_in && slv_vif.hresetn)begin
+      #1;
       ahb_trans.haddr = slv_vif.Haddr;      
       ahb_trans.hwrite = slv_vif.Hwrite;      
       ahb_trans.hburst_type = hburst_enum'(slv_vif.Hburst);
       ahb_trans.hsize_type = hsize_enum'(slv_vif.Hsize);
-      ahb_trans.hresp_type = hresp_enum'(slv_vif.Hready_out);
+      ahb_trans.hresp_type = hresp_enum'(slv_vif.Hresp);
       ahb_trans.htrans_type = htrans_enum'(slv_vif.Htrans);      
      //ahb_trans.address_phase = 1'b1;
       
       mon_ap_mem.write(ahb_trans);
+      `uvm_info(get_name(),$sformatf("Slave monitor addrt phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
   end
 endtask : addr_phase
 
