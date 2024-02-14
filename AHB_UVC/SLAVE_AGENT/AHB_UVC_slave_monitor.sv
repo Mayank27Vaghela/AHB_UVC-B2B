@@ -85,7 +85,7 @@ task AHB_UVC_slave_monitor_c::run_phase(uvm_phase phase);
   forever begin
     fork 
       forever begin
-        @(slv_vif.hclk);
+        @(posedge slv_vif.hclk);
         fork 
           addr_phase();
           data_phase();
@@ -111,7 +111,8 @@ task AHB_UVC_slave_monitor_c::addr_phase();
       ahb_trans.hwrite = slv_vif.Hwrite;      
       ahb_trans.hburst_type = hburst_enum'(slv_vif.Hburst);
       ahb_trans.hsize_type = hsize_enum'(slv_vif.Hsize);
-     // ahb_trans.hresp_enum = hresp_enum'(slv_vif.      
+      ahb_trans.hresp_type = hresp_enum'(slv_vif.Hready_out);
+      ahb_trans.htrans_type = htrans_enum'(slv_vif.Htrans);      
      //ahb_trans.address_phase = 1'b1;
       
       mon_ap_mem.write(ahb_trans);
@@ -123,7 +124,7 @@ task AHB_UVC_slave_monitor_c::data_phase();
   AHB_UVC_slave_transaction_c trans;
 
   `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_HIGH)
-  @(slv_vif.hclk);
+  @(posedge slv_vif.hclk);
   
   if(slv_vif.Hready_in && slv_vif.hresetn)begin
     ahb_trans.slv_hwdata      = slv_vif.Hwdata;
