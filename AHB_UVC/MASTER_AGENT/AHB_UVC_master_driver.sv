@@ -87,7 +87,7 @@ endfunction : build_phase
 //////////////////////////////////////////////////////////////////
 function void AHB_UVC_master_driver_c::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    `uvm_info(get_type_name(), "connect phase", UVM_HIGH)
+    `uvm_info("mstr_drv", "connect phase", UVM_HIGH)
 endfunction : connect_phase
 
 //////////////////////////////////////////////////////////////////
@@ -135,34 +135,45 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
                repeat(no_of_beat)begin
                  @(posedge uvc_if.hclk);
                  //$display("first_beat = %0d",first_beat);
-                 if(!beat)begin
-                   //$display("Inside the beatt...");
-                   ahb_trans_h.haddr = address();
-                   l_addr = ahb_trans_h.haddr;
+                 if(!uvc_if.Hresp)begin
+                   if(!beat)begin
+                     $display("Inside the beatt...");
+                     ahb_trans_h.haddr = address();
+                     l_addr = ahb_trans_h.haddr;
+                   end
+                   else begin
+                     ahb_trans_h.haddr = req.haddr;
+                     beat = 0;
+                   end
+                   //$display("returned haddr = %0h", ahb_trans_h.haddr);
+                   //fork
+                   address_phase();
                  end
                  else begin
-                   ahb_trans_h.haddr = req.haddr;
-                   beat = 0;
+                    $display("ELSE ERROR RESP");
+                   @(posedge uvc_if.hclk)
+                     uvc_if.Htrans   <= '0;
+                     break;
                  end
-                 //$display("returned haddr = %0h", ahb_trans_h.haddr);
-                 //fork
-                 address_phase();
-                 //end
                end
              end
              begin
               //begin
                repeat(no_of_beat+1)begin
                 @(posedge uvc_if.hclk);
-                if(!first_beat)begin
-                    data_phase();
-                  //end
-                  //join_any
-                end
-                 first_beat = 1'b0;
+                 if(!uvc_if.Hresp)begin
+                   if(!first_beat)begin
+                      data_phase();
+                    //end
+                   //join_any
+                   end
+                   first_beat = 1'b0;
+                 end
+                 else
+                    break;
                end
              end
-           join
+           join_any
            //end
            //wait((hwdata_q.size)==0);
            //$display($realtime,"item_done called");
@@ -195,8 +206,8 @@ endfunction : reset
 
 task AHB_UVC_master_driver_c::address_phase();
   wait(uvc_if.Hready_out);
-  uvc_if.Htrans  <= htrans_q.pop_front();
-  uvc_if.Haddr   <= ahb_trans_h.haddr;
+  uvc_if.Htrans <= htrans_q.pop_front();
+  uvc_if.Haddr  <= ahb_trans_h.haddr;
   uvc_if.Hwrite <= req.hwrite;
   uvc_if.Hburst <= req.hburst_type;
   uvc_if.Hsize  <= req.hsize_type;

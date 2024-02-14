@@ -11,7 +11,7 @@ class AHB_UVC_slv_seq_c extends AHB_UVC_base_slv_seq;
 
   //AHB transaction class handle
   AHB_UVC_slave_transaction_c trans_h;
-
+ 
   // object constructor
   extern function new(string name = "AHB_UVC_slv_seq_c");
 
@@ -36,7 +36,7 @@ task AHB_UVC_slv_seq_c::body();
    p_sequencer.slv_mem.item_fifo.get(req);
    read(req);   
     
-    assert(req.randomize() with {hresp_type dist{OKAY:=8,ERROR:=2};});
+    assert(req.randomize() with {hresp_type dist{OKAY:=2,ERROR:=8};});
 
   `uvm_send(req);
   end

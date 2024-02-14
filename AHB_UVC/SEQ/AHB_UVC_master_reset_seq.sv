@@ -12,6 +12,8 @@ class AHB_UVC_master_wr_seq_c extends AHB_UVC_master_base_sequence_c;
   //AHB transaction class handle
   AHB_UVC_master_transaction_c trans_h;
 
+  `uvm_declare_p_sequencer(AHB_UVC_master_sequencer_c)
+  
   // object constructor
   extern function new(string name = "AHB_UVC_master_wr_seq_c");
 
@@ -46,6 +48,10 @@ task AHB_UVC_master_wr_seq_c::body();
   end
   //trans_h.print();
   finish_item(trans_h);
+
+  p_sequencer.uvc_if.hresetn = 1'b0;
+  #5;
+  p_sequencer.uvc_if.hresetn = 1'b1;
 
  /* trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
   start_item(trans_h);
