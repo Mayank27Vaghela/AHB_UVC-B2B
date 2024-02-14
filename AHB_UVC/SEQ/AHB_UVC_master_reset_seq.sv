@@ -1,13 +1,13 @@
 // ------------------------------------------------------------------------- 
-// File name    : AHB_UVC_master_wr_seq_c.sv
+// File name    : AHB_UVC_master_reset_seq_c.sv
 // Title        : AHB_UVC master write followed by read sequence class
 // Project      : AHB_UVC
 // Created On   : 2024-02-07
 // Developers   : 
 // -------------------------------------------------------------------------
 
-class AHB_UVC_master_wr_seq_c extends AHB_UVC_master_base_sequence_c;
-  `uvm_object_utils(AHB_UVC_master_wr_seq_c)
+class AHB_UVC_master_reset_seq_c extends AHB_UVC_master_base_sequence_c;
+  `uvm_object_utils(AHB_UVC_master_reset_seq_c)
 
   //AHB transaction class handle
   AHB_UVC_master_transaction_c trans_h;
@@ -15,11 +15,11 @@ class AHB_UVC_master_wr_seq_c extends AHB_UVC_master_base_sequence_c;
   `uvm_declare_p_sequencer(AHB_UVC_master_sequencer_c)
   
   // object constructor
-  extern function new(string name = "AHB_UVC_master_wr_seq_c");
+  extern function new(string name = "AHB_UVC_master_reset_seq_c");
 
   //Task body
   extern task body();
-endclass : AHB_UVC_master_wr_seq_c
+endclass : AHB_UVC_master_reset_seq_c
 
 //////////////////////////////////////////////////////////////////
 // Method name        : new()
@@ -27,20 +27,28 @@ endclass : AHB_UVC_master_wr_seq_c
 // Returned Parameter : none
 // Description        : component constructor
 //////////////////////////////////////////////////////////////////
-function AHB_UVC_master_wr_seq_c::new(string name = "AHB_UVC_master_wr_seq_c");
+function AHB_UVC_master_reset_seq_c::new(string name = "AHB_UVC_master_reset_seq_c");
     super.new(name);
 endfunction : new
 
-task AHB_UVC_master_wr_seq_c::body();
-   
-  trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-  start_item(trans_h);
-  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR4;hsize_type ==WORD;hwrite == 1;})begin
-     `uvm_error(get_type_name(),"Sequence Randomization failed");
-  end
-  //trans_h.print();
-  finish_item(trans_h);
+task AHB_UVC_master_reset_seq_c::body();
+  
+  fork
+    begin 
+      trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
+      start_item(trans_h);
+      if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR8;hsize_type ==WORD;hwrite == 1;})begin
+        `uvm_error(get_type_name(),"Sequence Randomization failed");
+      end
+      //trans_h.print();
+      finish_item(trans_h);
+    end
 
+    begin
+      p_sequencer.uvc_if.reset(55,1);
+    end
+  join_any
+  
   trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
   start_item(trans_h);
   if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR4;hsize_type ==WORD;hwrite == 0;})begin
@@ -48,35 +56,4 @@ task AHB_UVC_master_wr_seq_c::body();
   end
   //trans_h.print();
   finish_item(trans_h);
-
-  p_sequencer.uvc_if.hresetn = 1'b0;
-  #5;
-  p_sequencer.uvc_if.hresetn = 1'b1;
-
- /* trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-  start_item(trans_h);
-  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR8;hsize_type ==WORD;hwrite == 1;})begin
-     `uvm_error(get_type_name(),"Sequence Randomization failed");
-  end
-  //trans_h.print();
-  finish_item(trans_h);
-
-  trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-
-  start_item(trans_h);
-  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==SINGLE;hsize_type ==WORD;hwrite == 1;})begin
-     `uvm_error(get_type_name(),"Sequence Randomization failed");
-  end
-  //trans_h.print();
-  finish_item(trans_h);
-
-  repeat(10)begin
-  trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-  start_item(trans_h);
-  if(!trans_h.randomize() with{haddr == 32'h30;})begin
-     `uvm_error(get_type_name(),"Sequence Randomization failed");
-  end
-  //trans_h.print();
-  finish_item(trans_h);
-  end*/
 endtask : body
