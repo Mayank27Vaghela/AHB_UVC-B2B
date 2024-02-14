@@ -30,6 +30,8 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
 
   bit get;
 
+  int no_of_beat;
+
   // component constructor
   extern function new(string name = "AHB_UVC_master_driver_c", uvm_component parent);
 
@@ -85,7 +87,7 @@ endfunction : build_phase
 //////////////////////////////////////////////////////////////////
 function void AHB_UVC_master_driver_c::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    `uvm_info(get_type_name(), "connect phase", UVM_HIGH)
+    `uvm_info("mstr_drv", "connect phase", UVM_HIGH)
 endfunction : connect_phase
 
 //////////////////////////////////////////////////////////////////
@@ -111,6 +113,9 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            $display("beat_cnt = %0d",req.beat_cnt);
            req.print();
            //$display($realtime,"get_next_item");
+           $display("Master trans_h");
+           req.print();
+           $display;
            first_beat = 1'b1;
            beat = 1;
            //forever begin
@@ -120,55 +125,67 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            l_addr = req.haddr;
            //$display("initial haddr = %0h",l_addr);
            //forever begin
-           bytes_in_burst = (2**(int'(req.hsize_type)))*(req.beat_cnt);
+           no_of_beat = req.htrans_type.size(); 
+           bytes_in_burst = (2**(int'(req.hsize_type)))*(no_of_beat);
            //$display("bytes_in_burst = %0d",bytes_in_burst);
            starting_addr = ((int'(req.haddr/(bytes_in_burst)))*(bytes_in_burst));
-           wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(req.beat_cnt);
-           //$display("the the  = %0h",(req.haddr % ((req.beat_cnt)*(bytes_in_burst))));
+           wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(no_of_beat);
+           //$display("the the  = %0h",(req.haddr % ((req.no_of_beat)*(bytes_in_burst))));
            //$display("starting add = %0h",starting_addr);
            //$display("wrap_addr add = %0h",wrap_addr);
            fork
              begin
-               repeat(req.beat_cnt)begin
+               repeat(no_of_beat)begin
                  @(posedge uvc_if.hclk);
                  //$display("first_beat = %0d",first_beat);
-                 if(!beat)begin
-                   //$display("Inside the beatt...");
-                   ahb_trans_h.haddr = address();
-                   l_addr = ahb_trans_h.haddr;
+                 if(!uvc_if.Hresp)begin
+                   if(!beat)begin
+                     $display("Inside the beatt...");
+                     ahb_trans_h.haddr = address();
+                     l_addr = ahb_trans_h.haddr;
+                   end
+                   else begin
+                     ahb_trans_h.haddr = req.haddr;
+                     beat = 0;
+                   end
+                   //$display("returned haddr = %0h", ahb_trans_h.haddr);
+                   //fork
+                   address_phase();
                  end
                  else begin
-                   ahb_trans_h.haddr = req.haddr;
-                   beat = 0;
+                    $display("ELSE ERROR RESP");
+                   @(posedge uvc_if.hclk)
+                     uvc_if.Htrans   <= '0;
+                     break;
                  end
-                 //$display("returned haddr = %0h", ahb_trans_h.haddr);
-                 //fork
-                 address_phase();
-                 //end
                end
              end
              begin
               //begin
-               repeat(req.beat_cnt+1)begin
+               repeat(no_of_beat+1)begin
                 @(posedge uvc_if.hclk);
-                if(!first_beat)begin
-                    data_phase();
-                  //end
-                  //join_any
-                end
-                 first_beat = 1'b0;
+                 if(!uvc_if.Hresp)begin
+                   if(!first_beat)begin
+                      data_phase();
+                    //end
+                   //join_any
+                   end
+                   first_beat = 1'b0;
+                 end
+                 else
+                    break;
                end
              end
-           join
+           join_any
            //end
            //wait((hwdata_q.size)==0);
-           $display($realtime,"item_done called");
+           //$display($realtime,"item_done called");
            seq_item_port.item_done(req);
            get = 1'b0;
           end
          end
        join_any
-       $display($realtime,"join_any");
+       //$display($realtime,"join_any");
        if(get)begin
          seq_item_port.item_done(req);
          get = 1'b0;
@@ -192,8 +209,8 @@ endfunction : reset
 
 task AHB_UVC_master_driver_c::address_phase();
   wait(uvc_if.Hready_out);
-  uvc_if.Htrans  <= htrans_q.pop_front();
-  uvc_if.Haddr   <= ahb_trans_h.haddr;
+  uvc_if.Htrans <= htrans_q.pop_front();
+  uvc_if.Haddr  <= ahb_trans_h.haddr;
   uvc_if.Hwrite <= req.hwrite;
   uvc_if.Hburst <= req.hburst_type;
   uvc_if.Hsize  <= req.hsize_type;

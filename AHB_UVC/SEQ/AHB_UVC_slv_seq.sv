@@ -11,7 +11,7 @@ class AHB_UVC_slv_seq_c extends AHB_UVC_base_slv_seq;
 
   //AHB transaction class handle
   AHB_UVC_slave_transaction_c trans_h;
-
+ 
   // object constructor
   extern function new(string name = "AHB_UVC_slv_seq_c");
 

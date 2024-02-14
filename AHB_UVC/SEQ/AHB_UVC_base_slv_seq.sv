@@ -55,18 +55,18 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
   addr = rd_req.haddr;
   addr_offset = addr - ((int'(addr/(`HWDATA_WIDTH/8)))*(`HWDATA_WIDTH/8));
 
- // rd_req.print();
+  //rd_req.print();
 
   if(!rd_req.hwrite && !rd_req.hresp_type) begin
 
-    `uvm_info("SLAVE SEQUENCE","THIS IS INSIDE READ OPERATION",UVM_MEDIUM)
+    `uvm_info("SLAVE SEQUENCE","THIS IS INSIDE READ OPERATION",UVM_HIGH)
  
     if(rd_req.htrans_type!=BUSY) begin
 
       for(int i=0;i<(2**rd_req.hsize_type);i++) begin
 
         data[(addr_offset*8) +: 8] = p_sequencer.slv_mem.mem[addr];
-        $display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
+        //$display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
 	addr_offset++;
         addr++;
 
@@ -76,7 +76,7 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
 
     end
 
-  //  rd_req.print();
+    //rd_req.print();
 
   end
     
@@ -102,8 +102,9 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
    if(trans_q[0].htrans_type==BUSY ||trans_q[0].htrans_type==IDLE)
      trans_q.delete(0);  
   end
-  $display("this is the size ------------------- %0d",$size(trans_q));
-//  wr_req.print();
+  
+  //$display("this is the size ------------------- %0d",$size(trans_q));
+  wr_req.print();
 
   if($size(trans_q)==2) begin
 
@@ -122,7 +123,7 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
       	for(int i=0;i<(2**trans_q[0].hsize_type);i++) begin
             
           p_sequencer.slv_mem.mem[addr] = trans_q[1].slv_hwdata[(addr_offset*8) +: 8];
-          $display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
+          //$display("THE DATA ---------%0h",p_sequencer.slv_mem.mem[addr]);
 	  addr_offset++;
           addr++;
 

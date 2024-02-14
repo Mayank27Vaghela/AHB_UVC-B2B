@@ -40,11 +40,11 @@ class AHB_UVC_master_coverage_c extends uvm_subscriber#(AHB_UVC_master_transacti
        bins haddr_all_rng_cb = {[32'h0:32'hFFFF]};
      } 
 
-     /*hwdata_cp : coverpoint trans_h.hwdata
+     hwdata_cp : coverpoint trans_h.hwdata[0]
      {
         option.comment = "bins for the hwdata range";
         bins pwdata_all_rng_cb = {['h0:'hFFFF]};
-     }*/
+     }
 
      hsize_cp : coverpoint trans_h.hsize_type
      {
@@ -76,7 +76,7 @@ class AHB_UVC_master_coverage_c extends uvm_subscriber#(AHB_UVC_master_transacti
        option.comment = "bins for the busy state of the master";
        bins busy_cb = {BUSY};
      }*/
-  endgroup : mstr_trans_cvg
+  endgroup
 endclass : AHB_UVC_master_coverage_c
 
 //////////////////////////////////////////////////////////////////
@@ -131,6 +131,7 @@ endtask : run_phase
 //////////////////////////////////////////////////////////////////
 function void AHB_UVC_master_coverage_c::write(AHB_UVC_master_transaction_c t);
   
+   trans_h = t;
     /** Sample method*/
     //if(spi_mstr_cfg_h.enable_cov)begin
       mstr_trans_cvg.sample();
