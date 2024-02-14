@@ -13,7 +13,7 @@ class AHB_UVC_master_config_c extends uvm_object;
   
   uvm_active_passive_enum is_active = UVM_ACTIVE;
 
-  bit mstr_coverage = 0;
+  bit mstr_coverage = 1;
 
   // component constructor
   extern function new(string name = "AHB_UVC_master_config_c");

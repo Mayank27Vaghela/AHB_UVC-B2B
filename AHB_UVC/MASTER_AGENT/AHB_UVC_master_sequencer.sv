@@ -9,6 +9,8 @@
 class AHB_UVC_master_sequencer_c extends uvm_sequencer#(AHB_UVC_master_transaction_c);
   `uvm_component_utils(AHB_UVC_master_sequencer_c)    
 
+  virtual AHB_UVC_interface uvc_if;
+
   // component constructor
   extern function new(string name = "AHB_UVC_master_sequencer_c", uvm_component parent);
 
@@ -41,6 +43,8 @@ endfunction : new
 function void AHB_UVC_master_sequencer_c::build_phase(uvm_phase phase);
     super.build_phase(phase);
     `uvm_info(get_type_name(), "build phase", UVM_HIGH)
+    if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
+      `uvm_error(get_type_name(),"Not able to get the interface");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////

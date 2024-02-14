@@ -7,6 +7,7 @@ sim:/AHB_UVC_top/uvc_if/Haddr \
 sim:/AHB_UVC_top/uvc_if/Hwrite \
 sim:/AHB_UVC_top/uvc_if/Hsize \
 sim:/AHB_UVC_top/uvc_if/Hwdata \
+sim:/AHB_UVC_top/uvc_if/Hrdata \
 sim:/AHB_UVC_top/uvc_if/Hprot \
 sim:/AHB_UVC_top/uvc_if/Hready_out \
 sim:/AHB_UVC_top/uvc_if/Hresp \
