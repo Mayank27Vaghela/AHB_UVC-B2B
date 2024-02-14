@@ -107,8 +107,8 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
 
          begin
           forever begin
-           get = 1;
            seq_item_port.get_next_item(req);
+           get = 1;
            req.print();
            //$display($realtime,"get_next_item");
            $display("Master trans_h");
@@ -179,8 +179,10 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            //end
            //wait((hwdata_q.size)==0);
            //$display($realtime,"item_done called");
-           seq_item_port.item_done(req);
-           get = 1'b0;
+           if(get)begin
+             seq_item_port.item_done(req);
+             get = 1'b0;
+           end
           end
          end
        join_any

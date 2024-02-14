@@ -6,7 +6,10 @@
 // Developers   : 
 // -------------------------------------------------------------------------
 
-interface AHB_UVC_interface(input logic hclk , hresetn);
+interface AHB_UVC_interface();
+  
+  logic hclk;
+  logic hresetn;
 
   // Master Signals 
   logic [`HADDR_WIDTH  - 1 : 0]Haddr;
@@ -24,4 +27,13 @@ interface AHB_UVC_interface(input logic hclk , hresetn);
   logic Hready_in;
   logic Hready_out;
   logic Hresp;
+
+  task reset(int rst_assrt,int no_cycle_rst_deassrt);
+    #rst_assrt;
+     hresetn = 1'b0;
+    repeat(no_cycle_rst_deassrt)
+      @(posedge hclk);
+     @(posedge hclk);
+      hresetn = 1'b1;
+  endtask : reset
 endinterface : AHB_UVC_interface

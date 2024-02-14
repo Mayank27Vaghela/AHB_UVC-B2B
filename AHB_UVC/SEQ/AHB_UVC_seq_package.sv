@@ -17,6 +17,7 @@ package AHB_UVC_seq_package;
   /** Other sequences*/
   `include "AHB_UVC_master_wr_seq.sv"
   `include "AHB_UVC_master_b2b_wr_seq.sv"
+  `include "AHB_UVC_master_reset_seq.sv"
   `include "AHB_UVC_base_slv_seq.sv"
   `include "AHB_UVC_slv_seq.sv"
 endpackage : AHB_UVC_seq_package

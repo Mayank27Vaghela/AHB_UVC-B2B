@@ -62,7 +62,7 @@ function void AHB_UVC_master_monitor_c::build_phase(uvm_phase phase);
     item_collected_port = new("item_collected_port",this);
     if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
       `uvm_error(get_type_name(),"Not able to get the interface");
-    trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
+    //trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
