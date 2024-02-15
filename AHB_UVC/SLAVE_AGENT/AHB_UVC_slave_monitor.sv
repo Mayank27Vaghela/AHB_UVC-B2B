@@ -121,7 +121,7 @@ endtask : addr_phase
 
 task AHB_UVC_slave_monitor_c::data_phase();
       
-  AHB_UVC_slave_transaction_c trans;
+ // AHB_UVC_slave_transaction_c trans;
 
   `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_HIGH)
   @(`SLV_MON_CB);
@@ -133,7 +133,6 @@ task AHB_UVC_slave_monitor_c::data_phase();
     ahb_trans.hready_out  = `SLV_MON_CB.Hready_out;
     //ahb_trans.data_phase = 1'b1;
 
- //   mon_ap_mem.write(ahb_trans);
     
   end
 

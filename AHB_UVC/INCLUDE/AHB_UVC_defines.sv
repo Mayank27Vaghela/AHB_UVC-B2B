@@ -9,6 +9,7 @@
 `ifndef AHB_UVC_DEFINES
 `define AHB_UVC_DEFINES
 
+`define TIME_PERIOD 5
 `define HBURST_WIDTH 3
 `define HADDR_WIDTH 32
 `define HWDATA_WIDTH 32

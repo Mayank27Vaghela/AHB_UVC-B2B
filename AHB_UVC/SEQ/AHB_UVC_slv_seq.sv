@@ -32,12 +32,17 @@ endfunction : new
 task AHB_UVC_slv_seq_c::body();
   
   forever begin
-   p_sequencer.slv_mem.item_fifo.get(req);
-   p_sequencer.slv_mem.item_fifo.get(req);
-   read(req);   
-    
-   assert(req.randomize() with {hresp_type dist{OKAY:=8,ERROR:=0};});
 
+//  `uvm_info(get_type_name(),"INSIDE THE SEQUENCE BODY ",UVM_NONE)
+   p_sequencer.slv_mem.item_fifo.get(req);
+  `uvm_info(get_type_name(),"INSIDE THE SEQUENCE BODY after get method  ",UVM_NONE)
+//   p_sequencer.slv_mem.item_fifo.get(req);
+   //`uvm_info(get_name(),$sformatf("req : %0p ",req),UVM_NONE)
+   req.print();
+  `uvm_info(get_type_name(),"INSIDE THE SEQUENCE BODY ",UVM_NONE)
+   write(req);
+   read(req);   
+    assert(req.randomize() with {hresp_type dist{OKAY:=10,ERROR:=0};});
   `uvm_send(req);
   end
     
