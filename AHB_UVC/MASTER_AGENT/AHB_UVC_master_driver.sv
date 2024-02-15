@@ -6,6 +6,8 @@
 // Developers   : 
 // -------------------------------------------------------------------------
 
+`ifndef AHB_UVC_MASTER_DRIVER_C
+`define AHB_UVC_MASTER_DRIVER_C
 class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
   `uvm_component_utils(AHB_UVC_master_driver_c)    
 
@@ -17,6 +19,7 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
   bit[(`HADDR_WIDTH -1):0] hwdata_q[$]; 
   htrans_enum              htrans_q[$]; 
 
+  htrans_enum              htrans_temp;
   bit [(`HADDR_WIDTH -1):0] l_addr;
 
   bit [(`HADDR_WIDTH -1):0] starting_addr;
@@ -31,6 +34,11 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
   bit get;
 
   int no_of_beat;
+
+  //used for index of the current transaction
+  int i;
+
+  bit sync;
 
   // component constructor
   extern function new(string name = "AHB_UVC_master_driver_c", uvm_component parent);
@@ -106,79 +114,76 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
          end
 
          begin
+          first_beat = 1'b1;
           forever begin
            seq_item_port.get_next_item(req);
            get = 1;
-           req.print();
-           //$display($realtime,"get_next_item");
-           $display("Master trans_h");
-           req.print();
-           $display;
-           first_beat = 1'b1;
            beat = 1;
-           //forever begin
            $cast(ahb_trans_h,req.clone());
            push_to_local_q();
-           //$display("hwdata_q = %0p",hwdata_q);
            l_addr = req.haddr;
-           //$display("initial haddr = %0h",l_addr);
            //forever begin
            no_of_beat = req.htrans_type.size(); 
            bytes_in_burst = (2**(int'(req.hsize_type)))*(no_of_beat);
-           //$display("bytes_in_burst = %0d",bytes_in_burst);
            starting_addr = ((int'(req.haddr/(bytes_in_burst)))*(bytes_in_burst));
            wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(no_of_beat);
-           //$display("the the  = %0h",(req.haddr % ((req.no_of_beat)*(bytes_in_burst))));
-           //$display("starting add = %0h",starting_addr);
-           //$display("wrap_addr add = %0h",wrap_addr);
            fork
              begin
                repeat(no_of_beat)begin
-                 @(posedge uvc_if.hclk);
-                 //$display($realtime,"uvc_if.Hresp = %0d",uvc_if.Hresp);
-                 //$display("first_beat = %0d",first_beat);
-                 if(!uvc_if.Hresp)begin
-                   if(!beat)begin
-                     //$display($realtime,"Inside the beatt...");
-                     ahb_trans_h.haddr = address();
-                     l_addr = ahb_trans_h.haddr;
+                 //@(posedge uvc_if.hclk);
+                 @(`MSTR_DRV_CB);
+                 sync = 1'b1;
+                 //if(MSTR_DRV_CB.hresetn)begin
+                    htrans_temp = htrans_q.pop_front();
+                    //sync = 1'b1;
+                 //end
+                   if(!`MSTR_DRV_CB.Hresp)begin
+                     if(htrans_temp != htrans_enum'(NONSEQ))begin
+                        if(htrans_temp != htrans_enum'(BUSY) && htrans_temp!= htrans_enum'(IDLE))begin
+                          ahb_trans_h.haddr = address();
+                          l_addr = ahb_trans_h.haddr;
+                        end
+                     end
+                     else begin
+                       ahb_trans_h.haddr = req.haddr;
+                       //beat = 0;
+                     end
+                     //fork
+                     address_phase();
                    end
                    else begin
-                     ahb_trans_h.haddr = req.haddr;
-                     beat = 0;
+                      //@(posedge uvc_if.hclk)
+                       `MSTR_DRV_CB.Htrans   <= '0;
+                       break;
                    end
-                   //$display("returned haddr = %0h", ahb_trans_h.haddr);
-                   //fork
-                   address_phase();
-                 end
-                 else begin
-                    //$display($realtime,"ELSE ERROR RESP");
-                   //@(posedge uvc_if.hclk)
-                     uvc_if.Htrans   <= '0;
-                     break;
-                 end
+                 //i++;
                end
              end
              begin
               //begin
                repeat(no_of_beat+1)begin
-                @(posedge uvc_if.hclk);
-                 if(!uvc_if.Hresp)begin
-                   if(!first_beat)begin
-                      data_phase();
-                    //end
-                   //join_any
+                  //if(sync == 1)begin  
+                //wait(sync ==1);
+                @(`MSTR_DRV_CB);
+                   if(!`MSTR_DRV_CB.Hresp)begin
+                     if(htrans_temp != htrans_enum'(NONSEQ))begin
+                      //if(htrans_temp != htrans_enum'(BUSY) && htrans_temp != htrans_enum'(IDLE) && !first_beat && sync) begin
+                        data_phase();
+                      //end
+                      //else
+                       //end
+                       //join_any
+                      end
+                     first_beat = 1'b0;
                    end
-                   first_beat = 1'b0;
-                 end
-                 else
-                    break;
+                   else
+                     break;
                end
+               //end
              end
            join_any
            //end
            //wait((hwdata_q.size)==0);
-           //$display($realtime,"item_done called");
            if(get)begin
              seq_item_port.item_done(req);
              get = 1'b0;
@@ -186,7 +191,6 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
           end
          end
        join_any
-       //$display($realtime,"join_any");
        if(get)begin
          seq_item_port.item_done(req);
          get = 1'b0;
@@ -209,18 +213,19 @@ function void AHB_UVC_master_driver_c::reset();
 endfunction : reset
 
 task AHB_UVC_master_driver_c::address_phase();
-  wait(uvc_if.Hready_out);
-  uvc_if.Htrans <= htrans_q.pop_front();
-  uvc_if.Haddr  <= ahb_trans_h.haddr;
-  uvc_if.Hwrite <= req.hwrite;
-  uvc_if.Hburst <= req.hburst_type;
-  uvc_if.Hsize  <= req.hsize_type;
+  `MSTR_DRV_CB.Htrans <= htrans_temp;
+  `MSTR_DRV_CB.Haddr  <= ahb_trans_h.haddr;
+  `MSTR_DRV_CB.Hwrite <= req.hwrite;
+  `MSTR_DRV_CB.Hburst <= req.hburst_type;
+  `MSTR_DRV_CB.Hsize  <= req.hsize_type;
+  wait(`MSTR_DRV_CB.Hready_out);
 endtask : address_phase
 
 task AHB_UVC_master_driver_c::data_phase();
-  wait(uvc_if.Hready_out);
-  uvc_if.Hwdata  <= hwdata_q.pop_front();
-  //$display("data_after pop = %p",hwdata_q);
+  if(htrans_temp != htrans_enum'(BUSY) && htrans_temp!= htrans_enum'(IDLE))begin   
+    `MSTR_DRV_CB.Hwdata  <= hwdata_q.pop_front();
+  end
+  wait(`MSTR_DRV_CB.Hready_out);
 endtask : data_phase
 
 task AHB_UVC_master_driver_c::push_to_local_q();
@@ -231,34 +236,29 @@ task AHB_UVC_master_driver_c::push_to_local_q();
   end
   else
     hwdata_q.push_back(0);
-  foreach(req.hwdata[i])begin
+
+  foreach(req.htrans_type[i])begin
     htrans_q.push_back(req.htrans_type[i]);
   end
 endtask : push_to_local_q
 
 function bit [(`HADDR_WIDTH -1):0] AHB_UVC_master_driver_c::address();
   if((req.hburst_type)%2 != 0)begin
-    //$display("Inside INCR");
-    //$display("haddr = %0h",ahb_trans_h.haddr);
     //return l_addr;
-    //$display("THE DOOM = %0d",(2**(int'(req.hsize_type))));
     l_addr = l_addr + (2**(req.hsize_type));
     return l_addr;
     //ahb_trans_h.haddr = l_addr;
   end
   else begin
     l_addr = l_addr + (2**(req.hsize_type));
-    //$display("-----WRAP haddr = %0h",l_addr);
-    //$display("WRAP ADDR = %0h",wrap_addr);
     if(l_addr>=wrap_addr)begin
-      //$display("Inside WRAP");
       l_addr  = starting_addr;
       return l_addr;
     end
     else begin
-      //$display("inside else Wrap l_addr = %0h",l_addr);
       return l_addr;
     end
   end
 endfunction :address
+`endif
 

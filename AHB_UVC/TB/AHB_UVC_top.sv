@@ -24,7 +24,7 @@ import AHB_UVC_package::*;
 
   initial begin
     uvc_if.hresetn = 0;
-    #5;
+    #6;
     uvc_if.hresetn = 1;
   end
 

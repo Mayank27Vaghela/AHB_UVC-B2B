@@ -17,4 +17,9 @@
 `define HSIZE_WIDTH 32
 `define HTRANS_WIDTH 32
 `define MEM_DEPTH 1024
+
+`define MSTR_DRV_CB uvc_if.ahb_mstr_drv_cb
+`define MSTR_MON_CB uvc_if.ahb_mstr_mon_cb
+`define SLV_DRV_CB  uvc_if.ahb_slv_drv_cb
+`define SLV_MON_CB  uvc_if.ahb_slv_mon_cb
 `endif

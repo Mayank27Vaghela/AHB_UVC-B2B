@@ -1,2 +1,2 @@
 vlog ../MASTER_AGENT/AHB_UVC_master_package.sv ../SLAVE_AGENT/AHB_UVC_slave_package.sv ../ENV/AHB_UVC_env_package.sv ../SEQ/AHB_UVC_seq_package.sv ../TEST/AHB_UVC_test_package.sv  ../TB/AHB_UVC_package.sv  +incdir+../INCLUDE +incdir+../SRC +incdir+../MASTER_AGENT +incdir+../SLAVE_AGENT +incdir+../ENV +incdir+../SEQ +incdir+../TEST +incdir+../TB  ../TB/AHB_UVC_top.sv
-vsim AHB_UVC_top -c -do "do runsim.do" +UVM_TESTNAME=AHB_UVC_sanity_test 
+vsim -novopt AHB_UVC_top -c -do "do runsim.do" +UVM_TESTNAME=AHB_UVC_sanity_test 

@@ -36,4 +36,62 @@ interface AHB_UVC_interface();
      @(posedge hclk);
       hresetn = 1'b1;
   endtask : reset
+
+  //master driver clocking block
+  clocking ahb_mstr_drv_cb @(posedge hclk);
+     default input #1 output #1;
+     output Haddr;
+     output Hburst;
+     output Hprot;
+     output Hsize;
+     output Htrans;
+     output Hwrite;
+     output Hwdata;
+     input Hready_in;
+     input Hready_out;
+     input Hresp;
+  endclocking : ahb_mstr_drv_cb
+
+  //master monitor clocking block
+  clocking ahb_mstr_mon_cb @(posedge hclk);
+    default input #1 output #1;
+    input Haddr;
+    input Hburst;
+    input Hprot;
+    input Hsize;
+    input Hwrite;
+    input Htrans;
+    input Hwdata;
+    input Hrdata;
+    input Hready_in;
+    input Hready_out;
+    input Hresp;
+  endclocking : ahb_mstr_mon_cb
+  
+  //slave driver clocking block
+  clocking ahb_slv_drv_cb @(posedge hclk);
+     default input #1 output #1;
+     output Hrdata;
+     output Hready_in;
+     output Hready_out;
+     output Hresp;
+    input Htrans;
+  endclocking : ahb_slv_drv_cb
+
+  //slave monitor clocking block
+  clocking ahb_slv_mon_cb @(posedge hclk);
+    default input #1 output #1;
+    input Haddr;
+    input Hburst;
+    input Hprot;
+    input Hsize;
+    input Hwrite;
+    input Htrans;
+    input Hwdata;
+    input Hrdata;
+    input Hready_in;
+    input Hready_out;
+    input Hresp;
+  endclocking : ahb_slv_mon_cb
+
 endinterface : AHB_UVC_interface

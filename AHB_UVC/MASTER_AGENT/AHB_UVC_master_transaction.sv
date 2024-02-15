@@ -25,6 +25,8 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
   
     rand int busy_index;
 
+    rand htrans_enum busy_queue[$];
+
     `uvm_object_utils_begin(AHB_UVC_master_transaction_c)
         `uvm_field_int(haddr,UVM_ALL_ON)
         `uvm_field_int(hwrite,UVM_ALL_ON)
@@ -70,6 +72,15 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
     /* constraint for 1k address boundary  */
     constraint addr_boundary_limit{ haddr%1024 + ((1<<hsize_type)*hwdata.size()) <= 1024; }
 
+    constraint no_of_busy {soft busy_queue.size() == 0;}
+
+    constraint busy_trans_queue {foreach(busy_queue[i])
+                                  { 
+                                    busy_queue[i] == htrans_enum'(BUSY);
+                                  }
+                                }
+
+    extern function void post_randomize();
 endclass : AHB_UVC_master_transaction_c
 
 //////////////////////////////////////////////////////////////////
@@ -81,3 +92,14 @@ endclass : AHB_UVC_master_transaction_c
 function AHB_UVC_master_transaction_c::new(string name = "AHB_UVC_master_transaction_c");
     super.new(name);
 endfunction : new
+
+function void AHB_UVC_master_transaction_c::post_randomize();
+   htrans_enum temp_trans_q[$];   
+   temp_trans_q = htrans_type;
+   //foreach(busy_queue[i])begin
+   repeat(busy_queue.size())begin
+     temp_trans_q.insert(busy_index,busy_queue.pop_front());
+   end
+   htrans_type = temp_trans_q;
+endfunction : post_randomize
+   
