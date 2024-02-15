@@ -19,11 +19,11 @@ comp:
 
 #To run the simulation in questasim
 sim: comp 
-	vsim -assertdebug  $(TOP_N) -do "do runsim.do" +UVM_TESTNAME=$(TEST)
+	vsim -novopt -assertdebug  $(TOP_N) -do "do runsim.do" +UVM_TESTNAME=$(TEST)
 	
 #To run the simulation in command prompt
 sim_c:comp
-	vsim $(TOP_N) -c -do "do runsim.do" +UVM_TESTNAME=$(TEST) 
+	vsim -novopt $(TOP_N) -c -do "do runsim.do" +UVM_TESTNAME=$(TEST) 
 	
 #+uvm_set_verbosity=uvm_test_top.ahb_main_env_h.ahb_env_h[0].ahb_master_agent_h.ahb_master_drv_h,UVM_HIGH
 	

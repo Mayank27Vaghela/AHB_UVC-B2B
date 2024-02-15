@@ -10,8 +10,7 @@ sim:/AHB_UVC_top/uvc_if/Hwdata \
 sim:/AHB_UVC_top/uvc_if/Hrdata \
 sim:/AHB_UVC_top/uvc_if/Hprot \
 sim:/AHB_UVC_top/uvc_if/Hready_out \
-sim:/AHB_UVC_top/uvc_if/Hresp \
-sim:/AHB_UVC_top/uvc_if/Hready_in 
+sim:/AHB_UVC_top/uvc_if/Hresp 
 run -all
 wave zoom full
 # {0 ps} {341250 ps}
