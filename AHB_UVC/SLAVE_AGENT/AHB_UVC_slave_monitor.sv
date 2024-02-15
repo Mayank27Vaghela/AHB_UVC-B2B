@@ -111,7 +111,7 @@ task AHB_UVC_slave_monitor_c::addr_phase();
       ahb_trans.hwrite = `SLV_MON_CB.Hwrite;      
       ahb_trans.hburst_type = hburst_enum'(`SLV_MON_CB.Hburst);
       ahb_trans.hsize_type = hsize_enum'(`SLV_MON_CB.Hsize);
-      ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hready_out);
+      ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hresp);
       ahb_trans.htrans_type = htrans_enum'(`SLV_MON_CB.Htrans);      
      //ahb_trans.address_phase = 1'b1;
       $cast(trans,ahb_trans.clone()); 
