@@ -40,6 +40,8 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
 
   bit sync;
 
+  int count;
+
   // component constructor
   extern function new(string name = "AHB_UVC_master_driver_c", uvm_component parent);
 
@@ -117,13 +119,16 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
           first_beat = 1'b1;
           forever begin
            seq_item_port.get_next_item(req);
+           
+           //if(count == 0)
            get = 1;
            beat = 1;
-           $cast(ahb_trans_h,req.clone());
+           //$cast(ahb_trans_h,req.clone());
            push_to_local_q();
            l_addr = req.haddr;
            //forever begin
            no_of_beat = req.htrans_type.size(); 
+           count = no_of_beat;
            bytes_in_burst = (2**(int'(req.hsize_type)))*(no_of_beat);
            starting_addr = ((int'(req.haddr/(bytes_in_burst)))*(bytes_in_burst));
            wrap_addr     = starting_addr + (2**(int'(req.hsize_type)))*(no_of_beat);
@@ -132,28 +137,28 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
                repeat(no_of_beat)begin
                  //@(posedge uvc_if.hclk);
                  @(`MSTR_DRV_CB);
-                 sync = 1'b1;
                  //if(MSTR_DRV_CB.hresetn)begin
                     htrans_temp = htrans_q.pop_front();
-                    //sync = 1'b1;
+                    sync = 1'b1;
                  //end
                    if(!`MSTR_DRV_CB.Hresp)begin
                      if(htrans_temp != htrans_enum'(NONSEQ))begin
                         if(htrans_temp != htrans_enum'(BUSY) && htrans_temp!= htrans_enum'(IDLE))begin
-                          ahb_trans_h.haddr = address();
-                          l_addr = ahb_trans_h.haddr;
+                          //ahb_trans_h.haddr = address();
+                          req.haddr = address();
+                          l_addr = req.haddr;
                         end
                      end
-                     else begin
-                       ahb_trans_h.haddr = req.haddr;
+                     //else begin
+                     //  ahb_trans_h.haddr = req.haddr;
                        //beat = 0;
-                     end
+                     //end
                      //fork
                      address_phase();
                    end
                    else begin
-                      //@(posedge uvc_if.hclk)
-                       `MSTR_DRV_CB.Htrans   <= '0;
+                      @(`MSTR_DRV_CB);  
+                      `MSTR_DRV_CB.Htrans <= '0;
                        break;
                    end
                  //i++;
@@ -161,23 +166,27 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
              end
              begin
               //begin
-               repeat(no_of_beat+1)begin
+               @(`MSTR_DRV_CB);
+               repeat(no_of_beat)begin
                   //if(sync == 1)begin  
                 //wait(sync ==1);
                 @(`MSTR_DRV_CB);
                    if(!`MSTR_DRV_CB.Hresp)begin
-                     if(htrans_temp != htrans_enum'(NONSEQ))begin
-                      //if(htrans_temp != htrans_enum'(BUSY) && htrans_temp != htrans_enum'(IDLE) && !first_beat && sync) begin
+                     //if(htrans_temp != htrans_enum'(NONSEQ))begin
+                      //#1;
+                      if(htrans_temp != htrans_enum'(BUSY) && htrans_temp != htrans_enum'(IDLE)) begin
                         data_phase();
-                      //end
+                        sync = 1'b0;
+                      end
                       //else
                        //end
                        //join_any
-                      end
+                     //end
                      first_beat = 1'b0;
                    end
                    else
                      break;
+                  //count--;
                end
                //end
              end
@@ -214,7 +223,7 @@ endfunction : reset
 
 task AHB_UVC_master_driver_c::address_phase();
   `MSTR_DRV_CB.Htrans <= htrans_temp;
-  `MSTR_DRV_CB.Haddr  <= ahb_trans_h.haddr;
+  `MSTR_DRV_CB.Haddr  <= req.haddr;
   `MSTR_DRV_CB.Hwrite <= req.hwrite;
   `MSTR_DRV_CB.Hburst <= req.hburst_type;
   `MSTR_DRV_CB.Hsize  <= req.hsize_type;
@@ -234,8 +243,11 @@ task AHB_UVC_master_driver_c::push_to_local_q();
       hwdata_q.push_back(req.hwdata[i]);
     end
   end
-  else
-    hwdata_q.push_back(0);
+  else begin
+    repeat(req.hwdata.size())begin
+      hwdata_q.push_back(0);
+    end
+  end
 
   foreach(req.htrans_type[i])begin
     htrans_q.push_back(req.htrans_type[i]);
