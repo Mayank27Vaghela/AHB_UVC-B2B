@@ -74,7 +74,7 @@ interface AHB_UVC_interface();
      output Hrdata;
      output Hready_in;
      output Hready_out;
-     output Hresp;
+     inout Hresp;
     input Htrans;
   endclocking : ahb_slv_drv_cb
 
