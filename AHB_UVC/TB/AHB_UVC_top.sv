@@ -18,21 +18,22 @@ import uvm_pkg::*;
 
 import AHB_UVC_package::*;
 
-  bit hclk;
-  bit hresetn;
+  bit Systemclock;
 
-  always #5 hclk = ~hclk;
+  always #5 Systemclock = ~Systemclock;
 
   initial begin
-    hresetn = 0;
-    #5;
-    hresetn = 1;
+    uvc_if.hresetn = 0;
+    #6;
+    uvc_if.hresetn = 1;
   end
 
   assign uvc_if.Hready_in = uvc_if.Hready_out;
+  assign uvc_if.hclk = Systemclock;
+  //assign uvc_if.hresetn = hresetn;
 
 	//interface handle declaration
-	AHB_UVC_interface uvc_if(hclk,hresetn);
+	AHB_UVC_interface uvc_if();
     
   initial begin
 	  uvm_config_db#(virtual AHB_UVC_interface)::set(null, "*", "uvc_if", uvc_if);

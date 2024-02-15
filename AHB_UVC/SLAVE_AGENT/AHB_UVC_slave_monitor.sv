@@ -11,7 +11,7 @@ class AHB_UVC_slave_monitor_c extends uvm_monitor;
 
   // analysis port for connecting the slave coverage and slave memory
   uvm_analysis_port#(AHB_UVC_slave_transaction_c) item_collected_port;
-  virtual AHB_UVC_interface slv_vif;
+  virtual AHB_UVC_interface uvc_if;
   AHB_UVC_slave_transaction_c ahb_trans;
   uvm_analysis_port #(AHB_UVC_slave_transaction_c) mon_ap_mem;
   // component constructor
@@ -56,7 +56,7 @@ function void AHB_UVC_slave_monitor_c::build_phase(uvm_phase phase);
   `uvm_info(get_type_name(), "build phase", UVM_HIGH)
   item_collected_port = new("item_collected_port",this);
    ahb_trans=AHB_UVC_slave_transaction_c::type_id::create("ahb_trans");
-   if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",slv_vif))
+   if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
      `uvm_error(get_type_name(),"Not able to get the interface");
 endfunction : build_phase
 
@@ -85,18 +85,18 @@ task AHB_UVC_slave_monitor_c::run_phase(uvm_phase phase);
   forever begin
     fork 
       forever begin
-        @(posedge slv_vif.hclk);
+        @(`SLV_MON_CB);
         fork 
           addr_phase();
           data_phase();
         join_any
       end
       begin
-        wait(!slv_vif.hresetn);
+        wait(!uvc_if.hresetn);
       end
     join_any
     disable fork;
-    wait(slv_vif.hresetn);
+    wait(uvc_if.hresetn);
   end
   
 endtask : run_phase
@@ -105,20 +105,17 @@ task AHB_UVC_slave_monitor_c::addr_phase();
 
   AHB_UVC_slave_transaction_c trans;
 
- // `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
-  if(slv_vif.Hready_in && slv_vif.hresetn)begin
-      #2;
-      ahb_trans.haddr = slv_vif.Haddr;      
-      ahb_trans.hwrite = slv_vif.Hwrite;      
-      ahb_trans.hburst_type = hburst_enum'(slv_vif.Hburst);
-      ahb_trans.hsize_type = hsize_enum'(slv_vif.Hsize);
-      ahb_trans.hresp_type = hresp_enum'(slv_vif.Hresp);
-      ahb_trans.htrans_type = htrans_enum'(slv_vif.Htrans);      
+  `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
+  if(`SLV_MON_CB.Hready_in && uvc_if.hresetn)begin
+      ahb_trans.haddr = `SLV_MON_CB.Haddr;      
+      ahb_trans.hwrite = `SLV_MON_CB.Hwrite;      
+      ahb_trans.hburst_type = hburst_enum'(`SLV_MON_CB.Hburst);
+      ahb_trans.hsize_type = hsize_enum'(`SLV_MON_CB.Hsize);
+      ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hready_out);
+      ahb_trans.htrans_type = htrans_enum'(`SLV_MON_CB.Htrans);      
      //ahb_trans.address_phase = 1'b1;
-            
-      $cast(trans,ahb_trans.clone());
+      $cast(trans,ahb_trans.clone()); 
       mon_ap_mem.write(trans);
-   `uvm_info(get_name(),$sformatf("Slave monitor addrt phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
   end
 endtask : addr_phase
 
@@ -126,15 +123,14 @@ task AHB_UVC_slave_monitor_c::data_phase();
       
  // AHB_UVC_slave_transaction_c trans;
 
-  @(posedge slv_vif.hclk);
-//  `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_NONE)
-  #1;//so that write method is not called priore to this assignments done in data phase 
-  if(slv_vif.Hready_in && slv_vif.hresetn)begin
-    ahb_trans.slv_hwdata  = slv_vif.Hwdata;
-    ahb_trans.hrdata      = slv_vif.Hrdata;
-    ahb_trans.hresp_type  = hresp_enum'(slv_vif.Hresp); 
-    ahb_trans.hready_out  = slv_vif.Hready_out;
-    //`uvm_info(get_name(),$sformatf("Slave monitor data phase print :\n %s",ahb_trans.sprint()),UVM_NONE)
+  `uvm_info(get_type_name(), "in data phase of Slave monitor ", UVM_HIGH)
+  @(`SLV_MON_CB);
+  
+  if(`SLV_MON_CB.Hready_in && uvc_if.hresetn)begin
+    ahb_trans.slv_hwdata      = `SLV_MON_CB.Hwdata;
+    ahb_trans.hrdata      = `SLV_MON_CB.Hrdata;
+    ahb_trans.hresp_type  = hresp_enum'(`SLV_MON_CB.Hresp); 
+    ahb_trans.hready_out  = `SLV_MON_CB.Hready_out;
     //ahb_trans.data_phase = 1'b1;
 
     

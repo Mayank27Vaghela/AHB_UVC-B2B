@@ -6,7 +6,10 @@
 // Developers   : 
 // -------------------------------------------------------------------------
 
-interface AHB_UVC_interface(input logic hclk , hresetn);
+interface AHB_UVC_interface();
+  
+  logic hclk;
+  logic hresetn;
 
   // Master Signals 
   logic [`HADDR_WIDTH  - 1 : 0]Haddr;
@@ -24,8 +27,6 @@ interface AHB_UVC_interface(input logic hclk , hresetn);
   logic Hready_in;
   logic Hready_out;
   logic Hresp;
-
-
 
 /* ASSERTIONS FOR AHB-LITE PROTOCOL  */ 
  
@@ -70,4 +71,69 @@ interface AHB_UVC_interface(input logic hclk , hresetn);
     (!Hready_out && Htrans==1 && !Hresp && Hburst==1) |=> (Htrans ==2 || Htrans==3)&& !Hready_out |-> ##[0:$] Hready_out|->$stable(Htrans);    
  endproperty
 
+  task reset(int rst_assrt,int no_cycle_rst_deassrt);
+    #rst_assrt;
+     hresetn = 1'b0;
+    repeat(no_cycle_rst_deassrt)
+      @(posedge hclk);
+     @(posedge hclk);
+      hresetn = 1'b1;
+  endtask : reset
+
+  //master driver clocking block
+  clocking ahb_mstr_drv_cb @(posedge hclk);
+     default input #1 output #1;
+     output Haddr;
+     output Hburst;
+     output Hprot;
+     output Hsize;
+     output Htrans;
+     output Hwrite;
+     output Hwdata;
+     input Hready_in;
+     input Hready_out;
+     input Hresp;
+  endclocking : ahb_mstr_drv_cb
+
+  //master monitor clocking block
+  clocking ahb_mstr_mon_cb @(posedge hclk);
+    default input #1 output #1;
+    input Haddr;
+    input Hburst;
+    input Hprot;
+    input Hsize;
+    input Hwrite;
+    input Htrans;
+    input Hwdata;
+    input Hrdata;
+    input Hready_in;
+    input Hready_out;
+    input Hresp;
+  endclocking : ahb_mstr_mon_cb
+  
+  //slave driver clocking block
+  clocking ahb_slv_drv_cb @(posedge hclk);
+     default input #1 output #1;
+     output Hrdata;
+     output Hready_in;
+     output Hready_out;
+     output Hresp;
+    input Htrans;
+  endclocking : ahb_slv_drv_cb
+
+  //slave monitor clocking block
+  clocking ahb_slv_mon_cb @(posedge hclk);
+    default input #1 output #1;
+    input Haddr;
+    input Hburst;
+    input Hprot;
+    input Hsize;
+    input Hwrite;
+    input Htrans;
+    input Hwdata;
+    input Hrdata;
+    input Hready_in;
+    input Hready_out;
+    input Hresp;
+  endclocking : ahb_slv_mon_cb
 endinterface : AHB_UVC_interface

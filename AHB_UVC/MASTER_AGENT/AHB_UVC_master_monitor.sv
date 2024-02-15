@@ -62,7 +62,7 @@ function void AHB_UVC_master_monitor_c::build_phase(uvm_phase phase);
     item_collected_port = new("item_collected_port",this);
     if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
       `uvm_error(get_type_name(),"Not able to get the interface");
-    trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
+    //trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
@@ -89,12 +89,12 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
 
     forever begin
        trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-       @(posedge uvc_if.hclk);
+       @(`MSTR_MON_CB);
        ++i;
        fork
          address_phase();
          begin
-            if(!first_beat && uvc_if.Hready_out)begin
+            if(!first_beat && `MSTR_MON_CB.Hready_out)begin
               data_phase();
             end
          end
@@ -103,18 +103,17 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
 endtask : run_phase
 
 task AHB_UVC_master_monitor_c::address_phase();
-  trans_h.haddr       = uvc_if.Haddr;
-  trans_h.hwrite      = uvc_if.Hwrite;
-  trans_h.hburst_type = hburst_enum'(uvc_if.Hburst);
-  trans_h.hsize_type  = hsize_enum'(uvc_if.Hsize);
+  trans_h.haddr       = `MSTR_MON_CB.Haddr;
+  trans_h.hwrite      = `MSTR_MON_CB.Hwrite;
+  trans_h.hburst_type = hburst_enum'(`MSTR_MON_CB.Hburst);
+  trans_h.hsize_type  = hsize_enum'(`MSTR_MON_CB.Hsize);
   first_beat = 1'b0;
 endtask : address_phase
 
 task AHB_UVC_master_monitor_c::data_phase();
-  trans_h.hwdata = '{uvc_if.Hwdata};
+  trans_h.hwdata = '{`MSTR_MON_CB.Hwdata};
 
-  if(uvc_if.Hready_out)
+  if(`MSTR_MON_CB.Hready_out)
      item_collected_port.write(trans_h);
-  //$display("master monitor after data added");
   //trans_h.print();
 endtask : data_phase

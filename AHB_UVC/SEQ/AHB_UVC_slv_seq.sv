@@ -42,9 +42,7 @@ task AHB_UVC_slv_seq_c::body();
   `uvm_info(get_type_name(),"INSIDE THE SEQUENCE BODY ",UVM_NONE)
    write(req);
    read(req);   
-    
     assert(req.randomize() with {hresp_type dist{OKAY:=10,ERROR:=0};});
-
   `uvm_send(req);
   end
     
