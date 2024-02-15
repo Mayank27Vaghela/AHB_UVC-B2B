@@ -114,8 +114,8 @@ task AHB_UVC_slave_monitor_c::addr_phase();
       ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hready_out);
       ahb_trans.htrans_type = htrans_enum'(`SLV_MON_CB.Htrans);      
      //ahb_trans.address_phase = 1'b1;
-      
-      mon_ap_mem.write(ahb_trans);
+      $cast(trans,ahb_trans.clone()); 
+      mon_ap_mem.write(trans);
   end
 endtask : addr_phase
 
