@@ -28,6 +28,49 @@ interface AHB_UVC_interface();
   logic Hready_out;
   logic Hresp;
 
+/* ASSERTIONS FOR AHB-LITE PROTOCOL  */ 
+ 
+   //assertion for clock frequency check
+    property clk_freq_check();
+    time current_time;
+    (1,current_time=$time)|=>($time-current_time==`TIME_PERIOD);
+   endproperty
+  
+  // Assertion for alligned address only      
+   property aligned_address();
+    hresetn && Htrans!=0 |-> (Haddr % (2**Hsize) == 0);
+  endproperty
+
+  //Assertion for Htrans (after an IDLE state BUSY OR SEQ can't occur)
+  property idle_busy_seq_invalid_chnange();
+    (Htrans==0) |-> (Htrans!=1 && Htrans!=3);
+  endproperty
+
+  //Assertion for Htrans (after an BUSY state IDLE OR NONSEQ can't occur)
+  property busy_nonseq_idle_invalid_change();
+    (Htrans==1) |-> (Htrans!=0 && Htrans!=2);
+  endproperty
+  
+  //Assertion for invalid transfer for SINGLE hburst can't terminate with a BUSY trans
+  property single_invalid_trans_change();
+    (Hburst==0) |-> (Htrans!=1);
+  endproperty 
+
+  //Assertion for stable htrans after idle to nonseq during waited transfer
+  property htrans_stable_during_hready_low();
+    (!Hready_out && Htrans==0 && !Hresp ) |=> (Htrans==2 && !Hready_out)|->##[0:$] Hready_out|-> $stable(Htrans) && $stable(Haddr);
+  endproperty
+
+  //Assertion for stable Address when transition from BUSY to SEQ in waited transfer for fixed length burst
+  property Busy_Seq_stable_addr();
+    (!Hready_out && Htrans ==0 && !Hresp && Hburst!=0 ) |=> (Htrans ==3 & !Hready_out )|->##[0:$] Hready_out|-> $stable(Htrans) && $stable(Haddr);
+  endproperty
+
+  //Assertion for change of htrans from BUSY to anyother Htrans when Hready_out is low (waited transfer) 
+  property Busy_other_type();
+    (!Hready_out && Htrans==1 && !Hresp && Hburst==1) |=> (Htrans ==2 || Htrans==3)&& !Hready_out |-> ##[0:$] Hready_out|->$stable(Htrans);    
+ endproperty
+
   task reset(int rst_assrt,int no_cycle_rst_deassrt);
     #rst_assrt;
      hresetn = 1'b0;
@@ -93,5 +136,4 @@ interface AHB_UVC_interface();
     input Hready_out;
     input Hresp;
   endclocking : ahb_slv_mon_cb
-
 endinterface : AHB_UVC_interface

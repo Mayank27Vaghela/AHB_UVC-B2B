@@ -86,6 +86,7 @@ task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
     super.run_phase(phase);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
     first_beat  = 1'b1;
+
     forever begin
        trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
        @(`MSTR_MON_CB);
