@@ -16,7 +16,7 @@ class AHB_UVC_base_slv_seq extends uvm_sequence #(AHB_UVC_slave_transaction_c);
 
   `uvm_declare_p_sequencer(AHB_UVC_slave_sequencer_c)
 
-  AHB_UVC_slave_transaction_c trans_q[$:2];
+  AHB_UVC_slave_transaction_c trans_q[$];
 
   extern function new(string name="AHB_UVC_base_slv_seq");
   extern task body();
@@ -79,16 +79,18 @@ endfunction : read
 
 function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
 
-  bit [`HADDR_WIDTH-1:0] addr;
-  bit [`HWDATA_WIDTH-1:0] data;
+  bit [`HADDR_WIDTH-1:0] addr; //for storing address
+  bit [`HWDATA_WIDTH-1:0] data; //for storing data
   int addr_offset;
 
 // `uvm_info(get_name(),$sformatf("INSIDE THE BASE SEQUENCE TRANSACTION PRINT :\n %s",wr_req.sprint()),UVM_NONE)
  //`uvm_info("SLAVE BASE SEQUENCE","INSIDE BASE SEQUENCE WRITE METHOD",UVM_MEDIUM)
   trans_q.push_back(wr_req);
   `uvm_info(get_type_name,$sformatf("queue size :---@@@@@@@@@@@@---------------------@--------------------:%0d",trans_q.size()),UVM_NONE)
+  `uvm_info(get_type_name,$sformatf("queue data[0] :---###################---------------------@--------------------:%0h/n addr:%0h/n queeue hwrite :%0d  ||  %0h  %0h  %0d",trans_q[0].slv_hwdata,trans_q[0].haddr,trans_q[0].hwrite,trans_q[1].slv_hwdata,trans_q[1].haddr,trans_q[1].hwrite),UVM_NONE)
+
   if(!trans_q[0].hwrite)
-    trans_q.delete();
+    trans_q.delete(0);
 
   if(wr_req.hresp_type)
     trans_q.delete();
@@ -128,11 +130,11 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
       //   `uvm_info(get_type_name(),$sformatf("THE DATA-----------------$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$------------------%0p",p_sequencer.slv_mem.mem),UVM_NONE);
         end
 
-     trans_q.delete(0);  
       end
       `uvm_info("SLAVE SEQUENCE","THIS IS SLAVE SENDING TRANSECTION",UVM_MEDIUM)       
       wr_req.print();
     									        
+     trans_q.delete(0);  
       if(trans_q[0].htrans_type==BUSY)
 	     trans_q.delete(0);
     end
