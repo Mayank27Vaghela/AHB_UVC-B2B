@@ -18,6 +18,10 @@ package AHB_UVC_seq_package;
   `include "AHB_UVC_master_wr_seq.sv"
   `include "AHB_UVC_master_b2b_wr_seq.sv"
   `include "AHB_UVC_master_reset_seq.sv"
+  `include "AHB_UVC_master_busy_seq.sv"
+  `include "AHB_UVC_master_single_burst_seq.sv"
+  `include "AHB_UVC_master_wrap_burst_seq.sv"
+  `include "AHB_UVC_master_incr_burst_seq.sv"
   `include "AHB_UVC_base_slv_seq.sv"
   `include "AHB_UVC_slv_seq.sv"
 endpackage : AHB_UVC_seq_package

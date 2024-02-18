@@ -10,7 +10,7 @@ class AHB_UVC_sanity_test extends AHB_UVC_base_test_c;
   `uvm_component_utils(AHB_UVC_sanity_test)    
 
   //Handle of the sequence
-  AHB_UVC_master_wr_seq_c seq_h;
+  AHB_UVC_master_wr_seq seq_h;
   AHB_UVC_slv_seq_c slv_seq_h;
 
   // Test constructor
@@ -45,7 +45,7 @@ endfunction : new
 function void AHB_UVC_sanity_test::build_phase(uvm_phase phase);
   super.build_phase(phase);
   `uvm_info(get_type_name(), "build phase", UVM_HIGH)
-  seq_h = AHB_UVC_master_wr_seq_c::type_id::create("seq_h");
+  seq_h = AHB_UVC_master_wr_seq::type_id::create("seq_h");
   slv_seq_h = AHB_UVC_slv_seq_c::type_id::create("slv_seq_h");
 endfunction : build_phase
 
