@@ -14,6 +14,9 @@ package AHB_UVC_master_package;
   /** Agent configuration file*/
   `include "AHB_UVC_master_config.sv"
 
+  //callbacks
+  `include "AHB_UVC_master_driver_cb.sv"
+
   /** Master files*/
   `include "AHB_UVC_master_sequencer.sv"
   `include "AHB_UVC_master_driver.sv"
@@ -21,6 +24,7 @@ package AHB_UVC_master_package;
   `include "AHB_UVC_master_coverage.sv"
   `include "AHB_UVC_master_agent.sv"
    
+  `include "AHB_UVC_master_change_htrans_inbet_err_cb.sv"
 endpackage : AHB_UVC_master_package
 `endif /** AHB__UVC_MASTER_PACKAGE*/
 

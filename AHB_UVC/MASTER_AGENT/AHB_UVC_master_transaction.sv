@@ -27,6 +27,12 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
 
     rand htrans_enum busy_queue[$];
 
+    rand int enb_hsize_change_in_between_burst_cb;
+
+    rand int enb_hburst_change_in_between_burst_cb;
+
+    rand bit enb_x_drv;
+
     `uvm_object_utils_begin(AHB_UVC_master_transaction_c)
         `uvm_field_int(haddr,UVM_ALL_ON)
         `uvm_field_int(hwrite,UVM_ALL_ON)
@@ -79,6 +85,12 @@ class AHB_UVC_master_transaction_c extends uvm_sequence_item;
                                     busy_queue[i] == htrans_enum'(BUSY);
                                   }
                                 }
+
+    constraint hsize_err {soft enb_hsize_change_in_between_burst_cb == 0;}
+
+    constraint x_drv_err {soft enb_x_drv == 0;}
+
+    constraint hburst_err {soft enb_hburst_change_in_between_burst_cb == 0;}
 
     extern function void post_randomize();
 endclass : AHB_UVC_master_transaction_c
