@@ -54,7 +54,7 @@ function void AHB_UVC_slave_agent_c::build_phase(uvm_phase phase);
      `uvm_error(get_type_name(),"Not able to get master configuration");
 
   if(ahb_slave_cfg_h.is_active == UVM_ACTIVE)begin
-	  ahb_slave_seqr_h = AHB_UVC_slave_sequencer_c::type_id::create("ahb_slave_seqr_h", this);
+   ahb_slave_seqr_h = AHB_UVC_slave_sequencer_c::type_id::create("ahb_slave_seqr_h", this);
 	  ahb_slave_drv_h = AHB_UVC_slave_driver_c::type_id::create("ahb_slave_drv_h", this);
     ahb_mem_h = AHB_UVC_slave_memory::type_id::create("ahb_mem_h", this);
   end

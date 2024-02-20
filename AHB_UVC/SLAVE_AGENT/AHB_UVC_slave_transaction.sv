@@ -19,10 +19,10 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
     bit[(`HRDATA_WIDTH -1):0]            hrdata;
     rand hresp_enum                 hresp_type;
     rand int                    incr_size;
-
    // rand bit [(`HBURST_WIDTH-1):0] beat_cnt;
     htrans_enum         htrans_type;
     bit hready_out;
+    bit reset_bit;
    // bit hready_in;
 
 
@@ -31,6 +31,7 @@ class AHB_UVC_slave_transaction_c extends uvm_sequence_item;
         `uvm_field_int(hwrite,UVM_ALL_ON)
         `uvm_field_int(slv_hwdata,UVM_ALL_ON)
         `uvm_field_int(hrdata,UVM_ALL_ON)
+        `uvm_field_int(reset_bit,UVM_ALL_ON)
         `uvm_field_enum(hburst_enum,hburst_type,UVM_ALL_ON)
         `uvm_field_enum(hsize_enum,hsize_type,UVM_ALL_ON)
         `uvm_field_enum(htrans_enum,htrans_type,UVM_ALL_ON)
