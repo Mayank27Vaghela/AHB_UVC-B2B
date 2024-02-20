@@ -34,7 +34,7 @@ task AHB_UVC_master_wr_seq_c::body();
   trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
   start_item(trans_h);
 
-  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR16;hsize_type ==WORD;hwrite == 1;})begin
+  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==WRAP4;hsize_type ==WORD;hwrite == 1;})begin
      `uvm_error(get_type_name(),"Sequence Randomization failed");
   end
   //trans_h.print();
@@ -42,7 +42,7 @@ task AHB_UVC_master_wr_seq_c::body();
   
   trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
   start_item(trans_h);
-  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR4;hsize_type ==WORD;hwrite == 0;})begin
+  if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==WRAP4;hsize_type ==WORD;hwrite == 0;})begin
      `uvm_error(get_type_name(),"Sequence Randomization failed");
   end
   //trans_h.print();

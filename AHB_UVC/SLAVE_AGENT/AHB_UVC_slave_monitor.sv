@@ -13,6 +13,7 @@ class AHB_UVC_slave_monitor_c extends uvm_monitor;
   uvm_analysis_port#(AHB_UVC_slave_transaction_c) item_collected_port;
   virtual AHB_UVC_interface uvc_if;
   AHB_UVC_slave_transaction_c ahb_trans;
+  AHB_UVC_slave_memory slv_mem;
   uvm_analysis_port #(AHB_UVC_slave_transaction_c) mon_ap_mem;
   // component constructor
   extern function new(string name = "AHB_UVC_slave_monitor_c", uvm_component parent);
@@ -31,6 +32,8 @@ class AHB_UVC_slave_monitor_c extends uvm_monitor;
   
   //data_phase
   extern virtual task data_phase();
+  extern virtual task reset();
+
 
 endclass : AHB_UVC_slave_monitor_c
 
@@ -87,15 +90,19 @@ task AHB_UVC_slave_monitor_c::run_phase(uvm_phase phase);
       forever begin
         @(`SLV_MON_CB);
         fork 
-          addr_phase();
-          data_phase();
+          addr_phase();//address phase
+          data_phase();//data phase 
         join_any
       end
       begin
-        wait(!uvc_if.hresetn);
+        wait(!uvc_if.hresetn); //waiting for reset assertion 
       end
     join_any
     disable fork;
+    //calling reset task to reset the memory to default value
+    if(!uvc_if.hresetn)
+    reset();
+
     wait(uvc_if.hresetn);
   end
   
@@ -105,18 +112,24 @@ task AHB_UVC_slave_monitor_c::addr_phase();
 
   AHB_UVC_slave_transaction_c trans;
 
-  `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_HIGH)
   if(`SLV_MON_CB.Hready_in && uvc_if.hresetn)begin
+  `uvm_info(get_type_name(), "in address phase of Slave monitor ", UVM_NONE)
       ahb_trans.haddr = `SLV_MON_CB.Haddr;      
       ahb_trans.hwrite = `SLV_MON_CB.Hwrite;      
       ahb_trans.hburst_type = hburst_enum'(`SLV_MON_CB.Hburst);
       ahb_trans.hsize_type = hsize_enum'(`SLV_MON_CB.Hsize);
-      ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hready_out);
+      ahb_trans.hresp_type = hresp_enum'(`SLV_MON_CB.Hresp);
       ahb_trans.htrans_type = htrans_enum'(`SLV_MON_CB.Htrans);      
      //ahb_trans.address_phase = 1'b1;
       $cast(trans,ahb_trans.clone()); 
       mon_ap_mem.write(trans);
   end
+  else begin
+    ahb_trans.reset_bit =1;
+    `uvm_info(get_name(),"Inside Monitor after reset ++++++++++++++++++++++++++++++++++",UVM_NONE)
+    mon_ap_mem.write(trans);
+  end
+    
 endtask : addr_phase
 
 task AHB_UVC_slave_monitor_c::data_phase();
@@ -132,8 +145,20 @@ task AHB_UVC_slave_monitor_c::data_phase();
     ahb_trans.hresp_type  = hresp_enum'(`SLV_MON_CB.Hresp); 
     ahb_trans.hready_out  = `SLV_MON_CB.Hready_out;
     //ahb_trans.data_phase = 1'b1;
-
-    
   end
 
 endtask : data_phase
+
+//reset task 
+task AHB_UVC_slave_monitor_c::reset();
+  begin
+  /*  ahb_trans.reset_bit =1;
+    `uvm_info(get_name(),"Inside Monitor after reset ++++++++++++++++++++++++++++++++++",UVM_NONE)
+    mon_ap_mem.write(ahb_trans); 
+    */
+    @(posedge uvc_if.hresetn);
+    disable addr_phase;
+    disable data_phase;
+    @(`SLV_MON_CB);
+  end 
+endtask : reset

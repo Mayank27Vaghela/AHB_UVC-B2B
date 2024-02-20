@@ -10,7 +10,7 @@ class AHB_UVC_slv_seq_c extends AHB_UVC_base_slv_seq;
   `uvm_object_utils(AHB_UVC_slv_seq_c)
 
   //AHB transaction class handle
-  AHB_UVC_slave_transaction_c trans_h;
+  AHB_UVC_slave_transaction_c req;
  
   // object constructor
   extern function new(string name = "AHB_UVC_slv_seq_c");
@@ -42,7 +42,7 @@ task AHB_UVC_slv_seq_c::body();
   `uvm_info(get_type_name(),"INSIDE THE SEQUENCE BODY ",UVM_NONE)
    write(req);
    read(req);   
-    assert(req.randomize() with {hresp_type dist{OKAY:=10,ERROR:=0};});
+    assert(req.randomize() with {hresp_type dist{OKAY:=9,ERROR:=1};});
   `uvm_send(req);
   end
     

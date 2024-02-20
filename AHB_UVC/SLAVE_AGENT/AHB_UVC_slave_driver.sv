@@ -99,6 +99,7 @@ task AHB_UVC_slave_driver_c::run_phase(uvm_phase phase);
 
 endtask : run_phase
 
+//send to dut task will drive the transaction level info to pin level through protocol 
 task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
   
   `uvm_info(get_type_name(), "Inside send_to_dut task", UVM_NONE)
@@ -140,7 +141,7 @@ task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
     `SLV_DRV_CB.Hready_out <= '1;
 endtask
 
-
+//reset task
 task AHB_UVC_slave_driver_c::reset();
   `SLV_DRV_CB.Hready_out <='1;
   `SLV_DRV_CB.Hresp <= '0;

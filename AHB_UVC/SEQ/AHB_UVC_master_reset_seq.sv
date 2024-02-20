@@ -37,7 +37,7 @@ task AHB_UVC_master_reset_seq_c::body();
     begin 
       trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
       start_item(trans_h);
-      if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR8;hsize_type ==WORD;hwrite == 1;})begin
+      if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==WRAP4;hsize_type ==WORD;hwrite == 1;})begin
         `uvm_error(get_type_name(),"Sequence Randomization failed");
       end
       //trans_h.print();
@@ -47,10 +47,11 @@ task AHB_UVC_master_reset_seq_c::body();
     begin
       p_sequencer.uvc_if.reset(55,1);
     end
-  join_any
+  join
   
   trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
   start_item(trans_h);
+  `uvm_info(get_name,"inside sequence after 1 transaction =========================>>>>>>>>>>>>>>>>>>.",UVM_NONE)
   if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==INCR4;hsize_type ==WORD;hwrite == 0;})begin
      `uvm_error(get_type_name(),"Sequence Randomization failed");
   end
