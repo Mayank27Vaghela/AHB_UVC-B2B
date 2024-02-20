@@ -1,23 +1,23 @@
 // ------------------------------------------------------------------------- 
-// File name    : AHB_UVC_master_single_burst.sv
+// File name    : AHB_UVC_master_single_burst_seq.sv
 // Title        : AHB_UVC master write followed by read sequence class
 // Project      : AHB_UVC
 // Created On   : 2024-02-07
 // Developers   : 
 // -------------------------------------------------------------------------
 
-class AHB_UVC_master_single_burst extends AHB_UVC_master_base_sequence_c;
-  `uvm_object_utils(AHB_UVC_master_single_burst)
+class AHB_UVC_master_single_burst_seq extends AHB_UVC_master_base_sequence_c;
+  `uvm_object_utils(AHB_UVC_master_single_burst_seq)
 
   //AHB transaction class handle
   AHB_UVC_master_transaction_c trans_h;
 
   // object constructor
-  extern function new(string name = "AHB_UVC_master_single_burst");
+  extern function new(string name = "AHB_UVC_master_single_burst_seq");
 
   //Task body
   extern task body();
-endclass : AHB_UVC_master_single_burst
+endclass : AHB_UVC_master_single_burst_seq
 
 //////////////////////////////////////////////////////////////////
 // Method name        : new()
@@ -25,12 +25,12 @@ endclass : AHB_UVC_master_single_burst
 // Returned Parameter : none
 // Description        : component constructor
 //////////////////////////////////////////////////////////////////
-function AHB_UVC_master_single_burst::new(string name = "AHB_UVC_master_single_burst");
+function AHB_UVC_master_single_burst_seq::new(string name = "AHB_UVC_master_single_burst_seq");
     super.new(name);
 endfunction : new
 
-task AHB_UVC_master_single_burst::body();
-  repeat(10)begin
+task AHB_UVC_master_single_burst_seq::body();
+  repeat(2)begin
     trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
     start_item(trans_h);
     if(!trans_h.randomize() with{haddr == 32'h38;hburst_type ==SINGLE;hsize_type ==WORD;hwrite == 1;})begin

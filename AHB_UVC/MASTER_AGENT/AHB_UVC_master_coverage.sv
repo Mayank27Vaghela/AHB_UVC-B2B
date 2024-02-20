@@ -76,6 +76,22 @@ class AHB_UVC_master_coverage_c extends uvm_subscriber#(AHB_UVC_master_transacti
        option.comment = "bins for the busy state of the master";
        bins busy_cb = {BUSY};
      }*/
+
+    
+     //cross coverpoint for hsize and hburst
+     hsize_X_hburst : cross hsize_cp, hburst_type_cp;
+
+     //cross coverpoint for hwrite and haddr
+     hwrite_X_haddr : cross trans_kind_cp, haddr_cp;
+
+     //cross coverpoint for hwrite and hburst
+     hwrite_X_hburst : cross trans_kind_cp, hburst_type_cp;
+
+     //cross corverpoint for haddr and hburst
+     haddr_X_hburst : cross haddr_cp, hburst_type_cp;
+
+     //cross coverpoint for hwrite and hsize
+     hwrite_X_hsize : cross trans_kind_cp, hsize_cp;
   endgroup
 endclass : AHB_UVC_master_coverage_c
 

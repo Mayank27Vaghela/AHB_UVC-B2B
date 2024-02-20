@@ -1,20 +1,20 @@
 // ------------------------------------------------------------------------- 
-// File name    : AHB_UVC_sanity_test
+// File name    : AHB_UVC_1k_boundary_test
 // Title        : AHB_UVC sanity test class
 // Project      : AHB_UVC
 // Created On   : 2024-02-07
 // Developers   : 
 // -------------------------------------------------------------------------
 
-class AHB_UVC_sanity_test extends AHB_UVC_base_test_c;
-  `uvm_component_utils(AHB_UVC_sanity_test)    
+class AHB_UVC_1k_boundary_test extends AHB_UVC_base_test_c;
+  `uvm_component_utils(AHB_UVC_1k_boundary_test)    
 
   //Handle of the sequence
-  AHB_UVC_master_wr_seq seq_h;
+  AHB_UVC_master_1kb_boundary_seq seq_h;
   AHB_UVC_slv_seq_c slv_seq_h;
 
   // Test constructor
-  extern function new(string name = "AHB_UVC_sanity_test", uvm_component parent);
+  extern function new(string name = "AHB_UVC_1k_boundary_test", uvm_component parent);
 
   // Test build phase
   extern virtual function void build_phase(uvm_phase phase);
@@ -24,7 +24,7 @@ class AHB_UVC_sanity_test extends AHB_UVC_base_test_c;
 
   // Test run phase
   extern virtual task run_phase(uvm_phase phase); 
-endclass : AHB_UVC_sanity_test
+endclass : AHB_UVC_1k_boundary_test
 
 //////////////////////////////////////////////////////////////////
 // Method name        : new()
@@ -32,7 +32,7 @@ endclass : AHB_UVC_sanity_test
 // Returned Parameter : none
 // Description        : test constructor
 //////////////////////////////////////////////////////////////////
-function AHB_UVC_sanity_test::new(string name = "AHB_UVC_sanity_test", uvm_component parent);
+function AHB_UVC_1k_boundary_test::new(string name = "AHB_UVC_1k_boundary_test", uvm_component parent);
   super.new(name, parent);
 endfunction : new
 
@@ -42,10 +42,10 @@ endfunction : new
 // Returned Parameter : none
 // Description        : for building components
 //////////////////////////////////////////////////////////////////
-function void AHB_UVC_sanity_test::build_phase(uvm_phase phase);
+function void AHB_UVC_1k_boundary_test::build_phase(uvm_phase phase);
   super.build_phase(phase);
   `uvm_info(get_type_name(), "build phase", UVM_HIGH)
-  seq_h = AHB_UVC_master_wr_seq::type_id::create("seq_h");
+  seq_h = AHB_UVC_master_1kb_boundary_seq::type_id::create("seq_h");
   slv_seq_h = AHB_UVC_slv_seq_c::type_id::create("slv_seq_h");
 endfunction : build_phase
 
@@ -55,7 +55,7 @@ endfunction : build_phase
 // Returned Parameter : none
 // Description        : for printing hierarchy
 //////////////////////////////////////////////////////////////////
-function void AHB_UVC_sanity_test::end_of_elaboration_phase(uvm_phase phase);
+function void AHB_UVC_1k_boundary_test::end_of_elaboration_phase(uvm_phase phase);
    super.end_of_elaboration_phase(phase);
     //uvm_info(get_type_name(), $sformatf("end of elaboration phase\n%s", sprint()), UVM_HIGH)
 endfunction : end_of_elaboration_phase
@@ -66,7 +66,7 @@ endfunction : end_of_elaboration_phase
 // Returned Parameter : none
 // Description        : post build/connect phase
 //////////////////////////////////////////////////////////////////
-task AHB_UVC_sanity_test::run_phase(uvm_phase phase);
+task AHB_UVC_1k_boundary_test::run_phase(uvm_phase phase);
     super.run_phase(phase);
     phase.raise_objection(this);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
