@@ -28,6 +28,14 @@ import AHB_UVC_package::*;
     uvc_if.hresetn = 1;
   end
 
+  /*initial begin
+    uvc_if.Hready_out = 1'b1;   
+    #35;
+    uvc_if.Hready_out = 1'b0;   
+    #195;
+    uvc_if.Hready_out = 1'b1;   
+  end*/
+
   assign uvc_if.Hready_in = uvc_if.Hready_out;
   assign uvc_if.hclk = Systemclock;
   //assign uvc_if.hresetn = hresetn;
