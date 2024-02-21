@@ -9,6 +9,8 @@
 class AHB_UVC_slave_coverage_c extends uvm_subscriber#(AHB_UVC_slave_transaction_c);
   `uvm_component_utils(AHB_UVC_slave_coverage_c)    
 
+  AHB_UVC_slave_transaction_c trans_h;
+  
   // component constructor
   extern function new(string name = "AHB_UVC_slave_coverage_c", uvm_component parent);
  
@@ -23,7 +25,52 @@ class AHB_UVC_slave_coverage_c extends uvm_subscriber#(AHB_UVC_slave_transaction
 
   // component run phase
   extern virtual task run_phase(uvm_phase phase); 
+
+covergroup slv_trans_cvg;
+  
+  //bins for the write and read opeartion
+  trans_wr_rd_cp : coverpoint trans_h.hwrite
+    {
+      bins write_cb = {1'b1};
+      bins read_cb = {1'b0};
+    }
+
+  //bins for haddr ranges 
+  trans_haddr_cp : coverpoint trans_h.haddr
+    {
+      bins low_range = {[32'h0 : 32'hff]};
+      bins mid_range = {[32'hfff :32'hfffff]};
+      bins hig_range = {[32'hffff : 32'hffffffff]};
+    }
+
+  //bins for slv_hwdata ranges
+  trans_slv_hwdata_cp : coverpoint trans_h.slv_hwdata
+    {
+      bins low_range = {[32'h0 : 32'hff]};
+      bins mid_range = {[32'hfff :32'hfffff]};
+      bins hig_range = {[32'hffff : 32'hffffffff]};
+    }
+
+  //bins for hresp 
+   hresp_type_cp : coverpoint trans_h.hresp_type
+     {
+        bins error_cb = {1'b1};
+        bins okay_cb  = {1'b0};
+     }
+
+  //bins for hburst
+    hburst_type_cp : coverpoint trans_h.hburst_type
+     {
+       bins hburst_type_cb[] = {SINGLE,INCR,WRAP4,INCR4,WRAP8,INCR8,WRAP16,INCR16};
+     }
+
+    endgroup
+
 endclass : AHB_UVC_slave_coverage_c
+      
+        
+   
+
 
 //////////////////////////////////////////////////////////////////
 // Method name        : new()
@@ -33,6 +80,7 @@ endclass : AHB_UVC_slave_coverage_c
 //////////////////////////////////////////////////////////////////
 function AHB_UVC_slave_coverage_c::new(string name = "AHB_UVC_slave_coverage_c", uvm_component parent);
   super.new(name, parent);
+  slv_trans_cvg = new();
 endfunction : new
 
 //////////////////////////////////////////////////////////////////
@@ -76,9 +124,11 @@ endtask : run_phase
 //////////////////////////////////////////////////////////////////
 function void AHB_UVC_slave_coverage_c::write(AHB_UVC_slave_transaction_c t);
   
+   trans_h = t;
     /** Sample method*/
     //if(spi_mstr_cfg_h.enable_cov)begin
-    //  cvg.sample(t);
+      slv_trans_cvg.sample();
     //end /** if*/
 endfunction : write
+
 
