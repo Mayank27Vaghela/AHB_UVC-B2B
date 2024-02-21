@@ -9,6 +9,8 @@
 class AHB_UVC_slave_coverage_c extends uvm_subscriber#(AHB_UVC_slave_transaction_c);
   `uvm_component_utils(AHB_UVC_slave_coverage_c)    
 
+  AHB_UVC_slave_transaction_c trans_h;
+  
   // component constructor
   extern function new(string name = "AHB_UVC_slave_coverage_c", uvm_component parent);
  
@@ -41,8 +43,9 @@ covergroup slv_trans_cvg;
       bins hig_range = {[32'hffff : 32'hffffffff]};
     }
 
-  //bins for hwdata ranges
-  trans_hwdata_cp : coverpoint trans_h.hwdata
+  //bins for slv_hwdata ranges
+  trans_slv_hwdata_cp : coverpoint trans_h.slv_hwdata
+
     {
       bins low_range = {[32'h0 : 32'hff]};
       bins mid_range = {[32'hfff :32'hfffff]};
@@ -78,6 +81,7 @@ endclass : AHB_UVC_slave_coverage_c
 //////////////////////////////////////////////////////////////////
 function AHB_UVC_slave_coverage_c::new(string name = "AHB_UVC_slave_coverage_c", uvm_component parent);
   super.new(name, parent);
+  slv_trans_cvg = new();
 endfunction : new
 
 //////////////////////////////////////////////////////////////////
@@ -121,9 +125,11 @@ endtask : run_phase
 //////////////////////////////////////////////////////////////////
 function void AHB_UVC_slave_coverage_c::write(AHB_UVC_slave_transaction_c t);
   
+   trans_h = t;
     /** Sample method*/
     //if(spi_mstr_cfg_h.enable_cov)begin
-    //  cvg.sample(t);
+      slv_trans_cvg.sample();
     //end /** if*/
 endfunction : write
+
 
