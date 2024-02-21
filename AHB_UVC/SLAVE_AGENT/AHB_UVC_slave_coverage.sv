@@ -45,6 +45,7 @@ covergroup slv_trans_cvg;
 
   //bins for slv_hwdata ranges
   trans_slv_hwdata_cp : coverpoint trans_h.slv_hwdata
+
     {
       bins low_range = {[32'h0 : 32'hff]};
       bins mid_range = {[32'hfff :32'hfffff]};

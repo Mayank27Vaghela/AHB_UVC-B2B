@@ -56,7 +56,7 @@ function void AHB_UVC_base_slv_seq::read(AHB_UVC_slave_transaction_c rd_req);
   addr = rd_req.haddr;
   addr_offset = addr - ((int'(addr/(`HWDATA_WIDTH/8)))*(`HWDATA_WIDTH/8));
 
- // rd_req.print();
+  rd_req.print();
 
   if(!rd_req.hwrite && !rd_req.hresp_type) begin
    `uvm_info("SLAVE SEQUENCE","****************************************************THIS IS INSIDE READ OPERATION",UVM_MEDIUM)
@@ -88,6 +88,11 @@ function void AHB_UVC_base_slv_seq::write(AHB_UVC_slave_transaction_c wr_req);
   trans_q.push_back(wr_req);
   `uvm_info(get_type_name,$sformatf("queue size :---@@@@@@@@@@@@---------------------@--------------------:%0d",trans_q.size()),UVM_NONE)
   `uvm_info(get_type_name,$sformatf("queue data[0] :---###################---------------------@--------------------:%0h/n addr:%0h/n queeue hwrite :%0d  ||  %0h  %0h  %0d",trans_q[0].slv_hwdata,trans_q[0].haddr,trans_q[0].hwrite,trans_q[1].slv_hwdata,trans_q[1].haddr,trans_q[1].hwrite),UVM_NONE)
+
+  if(trans_q[0].reset_bit)begin
+    trans_q.delete();
+  `uvm_info(get_type_name,$sformatf("queue size after reset RESET -----------:------------------------@--------------------:%0d",trans_q.size()),UVM_NONE)end
+
 
   if(!trans_q[0].hwrite)
     trans_q.delete(0);

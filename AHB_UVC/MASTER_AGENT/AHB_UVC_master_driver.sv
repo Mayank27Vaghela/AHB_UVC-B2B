@@ -167,6 +167,7 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
            begin 
              forever begin 
                @(posedge uvc_if.hclk);
+
                 if(`MSTR_DRV_CB.Hready_out == 1)
                   timeout_count = 0;
                 else 
