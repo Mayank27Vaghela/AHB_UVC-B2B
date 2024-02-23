@@ -108,7 +108,7 @@ task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
   if(req.htrans_type == IDLE || req.htrans_type == BUSY)
     begin
     `uvm_info(get_name(),"--------------------------------------------in side htrans_type =IDLE or BUSY-----------------------",UVM_NONE);
-      `SLV_DRV_CB.Hready_out <= 1;
+      `SLV_DRV_CB.Hready_out <= req.hready_out;
       `SLV_DRV_CB.Hresp      <= hresp_enum'(OKAY); 
       `SLV_DRV_CB.Hrdata     <= req.hrdata;
     end
@@ -134,6 +134,10 @@ task AHB_UVC_slave_driver_c::send_to_dut(AHB_UVC_slave_transaction_c req);
 
    if(!req.hready_out && !`SLV_DRV_CB.Hresp) begin
     `uvm_info(get_name(),"--------------------------------------------in side iffffff -----------------------",UVM_NONE);
+    `SLV_DRV_CB.Hready_out <= '0;
+     repeat(req.wait_cycle)
+      @(`SLV_DRV_CB);
+    
     `SLV_DRV_CB.Hready_out <= '1;
     end
    else if(`SLV_DRV_CB.Hresp && `SLV_DRV_CB.Htrans==htrans_enum'(IDLE))
