@@ -24,6 +24,9 @@ class AHB_UVC_base_test_c extends uvm_test;
 
   // Test run phase
   extern virtual task run_phase(uvm_phase phase); 
+
+  //Report sphase
+  extern virtual function void report_phase(uvm_phase phase); 
 endclass : AHB_UVC_base_test_c
 
 //////////////////////////////////////////////////////////////////
@@ -72,5 +75,43 @@ task AHB_UVC_base_test_c::run_phase(uvm_phase phase);
     `uvm_info(get_type_name(), "run phase", UVM_HIGH)
      phase.raise_objection(this);
       `uvm_info(get_type_name(),"INSIDE RUN_PHASE",UVM_HIGH); 
+      phase.phase_done.set_drain_time(this,1000ns);      
      phase.drop_objection(this);
 endtask : run_phase
+
+function void AHB_UVC_base_test_c::report_phase(uvm_phase phase);
+  //Handle of report server             
+  uvm_report_server svr;
+
+  // Getting global report server
+  svr = uvm_report_server::get_server();
+ 
+  if((svr.get_severity_count(UVM_ERROR) + svr.get_severity_count(UVM_FATAL) ) == 0)begin
+    $display;
+    $display("/////////////////////////////////");
+    $display("    #####  #####  ##### #####    ");
+    $display("    #   #  #   #  #     #        ");
+    $display("    #   #  #   #  #     #        ");
+    $display("    #####  #####  ##### #####    ");
+    $display("    #      #   #      #     #    ");
+    $display("    #      #   #      #     #    ");
+    $display("    #      #   #  ##### #####    ");
+    $display("/////////////////////////////////");
+    $display;
+   end
+   else begin
+     $display;
+     $display("//////////////////////////////////////////");
+     $display("        #####  #####  #####  #             ");
+     $display("        #      #   #    #    #             ");
+     $display("        #      #   #    #    #             ");
+     $display("        #####  #####    #    #             ");
+     $display("        #      #   #    #    #             ");
+     $display("        #      #   #    #    #             ");
+     $display("        #      #   #  #####  ######        ");
+     $display("/////////////////////////////////////////");
+     $display;
+   end
+endfunction : report_phase
+
+

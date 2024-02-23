@@ -17,6 +17,7 @@ package AHB_UVC_test_package;
   `include "AHB_UVC_master_wait_test.sv"
   `include "AHB_UVC_single_burst_test.sv"
   `include "AHB_UVC_incr_burst_test.sv"
+  `include "AHB_UVC_undefined_len_incr_burst_test.sv"  
   `include "AHB_UVC_wrap_burst_test.sv"
   `include "AHB_UVC_reset_test.sv"
   `include "AHB_UVC_hsize_err_test.sv"

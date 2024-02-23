@@ -14,6 +14,7 @@ class AHB_UVC_main_environment_c extends uvm_env;
 	// handles declaration
   AHB_UVC_environment_c ahb_env_h[];
   AHB_UVC_env_config_c ahb_env_cfg_h[];
+  AHB_UVC_scoreboard_c ahb_sb_h;
 
   int num_of_env = 2;
     
@@ -62,6 +63,9 @@ function void AHB_UVC_main_environment_c::build_phase(uvm_phase phase);
   for(int i=0;i<num_of_env;i++)begin
     uvm_config_db#(AHB_UVC_env_config_c)::set(this,$sformatf("ahb_env_h[%0d]",i),"env_config",ahb_env_cfg_h[i]);
   end
+
+  ahb_sb_h = AHB_UVC_scoreboard_c::type_id::create("ahb_sb_h",this); 
+
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
@@ -73,6 +77,8 @@ endfunction : build_phase
 function void AHB_UVC_main_environment_c::connect_phase(uvm_phase phase);
   super.connect_phase(phase);
   `uvm_info(get_type_name(), "connect phase", UVM_HIGH)
+   ahb_env_h[0].ahb_master_agent_h.ahb_master_mon_h.item_collected_port.connect(ahb_sb_h.mmon_imp);
+   ahb_env_h[1].ahb_slave_agent_h.ahb_slave_mon_h.item_collected_port.connect(ahb_sb_h.smon_imp);
 endfunction : connect_phase
 
 //////////////////////////////////////////////////////////////////

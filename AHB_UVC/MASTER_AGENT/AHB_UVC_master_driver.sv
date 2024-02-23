@@ -15,25 +15,44 @@ class AHB_UVC_master_driver_c extends uvm_driver#(AHB_UVC_master_transaction_c);
   //Instance of the AHB interface
   virtual AHB_UVC_interface uvc_if;
   
+  //Master trasnaction class handle
   AHB_UVC_master_transaction_c ahb_trans_h;
   
+  //Hwdata data queue
   bit[(`HADDR_WIDTH -1):0] hwdata_q[$]; 
+  
+  //Htrans queue
   htrans_enum              htrans_q[$]; 
 
+  //htrans enum instance
   htrans_enum              htrans_temp;
+
+  //htrans enum
   htrans_enum              htrans_pri;
+
+  //local address(new address)
   bit [(`HADDR_WIDTH -1):0] l_addr;
 
+  //Starting address
   bit [(`HADDR_WIDTH -1):0] starting_addr;
+
+  //Wrap address
   bit [(`HADDR_WIDTH -1):0] wrap_addr;
 
+  //Total bytes in a burst
   int bytes_in_burst;
 
+  //Used to sync the get_next_item and item_done call
   bit get;
 
+  //Total number of beats in a transaction
   int no_of_beat;
 
+  //Timeout for Hready_out wait
   int timeout_count;
+
+  //Used to synchronize the hresp
+  bit b;
 
   // component constructor
   extern function new(string name = "AHB_UVC_master_driver_c", uvm_component parent);
@@ -113,6 +132,7 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
           forever begin
            seq_item_port.get_next_item(req);
            get = 1;
+           `uvm_info(get_type_name(),$sformatf("get transaction = %s",req.sprint),UVM_NONE);
            if(!req.enb_x_drv)
              push_to_local_q();
            `uvm_do_callbacks(AHB_UVC_master_driver_c,AHB_UVC_master_driver_cb,change_burst_inbet_err(htrans_q)); 
@@ -141,26 +161,23 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
                  if(i == req.enb_hburst_change_in_between_burst_cb)
                    req.hburst_type = INCR16;
 
-                if(!req.enb_x_drv)
+                 if(!req.enb_x_drv)
                    address_phase();
-                else 
+                 else 
                    x_drive_err();
-               end
-               else begin
-                 @(`MSTR_DRV_CB);  
-                 `MSTR_DRV_CB.Htrans <= '0;
-                  break;
-               end // else
-               if(!`MSTR_DRV_CB.Hresp)begin
+
                  if(htrans_pri != htrans_enum'(BUSY) && htrans_pri != htrans_enum'(IDLE)) begin
-                    if(!req.enb_x_drv)
-                      data_phase();
-                    else
-                      x_drive_err();
-                 end //if 
+                   if(!req.enb_x_drv)
+                     data_phase();
+                   else
+                     x_drive_err();
+                end //if 
                end //if
-               else
+               else begin
+                 `MSTR_DRV_CB.Htrans <= '0;
+                 b = 1;
                  break;
+               end // else
              end //for
            end //begin
         
@@ -186,6 +203,10 @@ task AHB_UVC_master_driver_c::run_phase(uvm_phase phase);
              seq_item_port.item_done(req);
              get = 1'b0;
            end //if 
+          if(b==1)begin
+            b = 0;
+            break;
+          end
           end //forever
          end //begin
        join_any
@@ -212,17 +233,17 @@ function void AHB_UVC_master_driver_c::reset();
 endfunction : reset
 
 task AHB_UVC_master_driver_c::address_phase();
+  wait(`MSTR_DRV_CB.Hready_out);
   `MSTR_DRV_CB.Htrans <= htrans_temp;
   `MSTR_DRV_CB.Haddr  <= req.haddr;
   `MSTR_DRV_CB.Hwrite <= req.hwrite;
   `MSTR_DRV_CB.Hburst <= req.hburst_type;
   `MSTR_DRV_CB.Hsize  <= req.hsize_type;
-  //wait(`MSTR_DRV_CB.Hready_out);
 endtask : address_phase
 
 task AHB_UVC_master_driver_c::data_phase();
-  `MSTR_DRV_CB.Hwdata  <= hwdata_q.pop_front();
   wait(`MSTR_DRV_CB.Hready_out);
+  `MSTR_DRV_CB.Hwdata  <= hwdata_q.pop_front();
 endtask : data_phase
 
 task AHB_UVC_master_driver_c::push_to_local_q();
@@ -268,4 +289,5 @@ function void AHB_UVC_master_driver_c::x_drive_err();
   `MSTR_DRV_CB.Hwdata <= 'hx;
 endfunction : x_drive_err
 `endif
+
 
