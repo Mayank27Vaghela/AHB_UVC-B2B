@@ -146,7 +146,8 @@ task AHB_UVC_slave_monitor_c::data_phase();
     ahb_trans.hready_out  = `SLV_MON_CB.Hready_out;
     //ahb_trans.data_phase = 1'b1;
   end
-
+  if(!ahb_trans.hwrite)
+    item_collected_port.write(ahb_trans);
 endtask : data_phase
 
 //reset task 

@@ -18,11 +18,6 @@ class AHB_UVC_master_monitor_c extends uvm_monitor;
     //transaction handle
     AHB_UVC_master_transaction_c trans_h;
 
-    //first beat
-    bit first_beat;
-
-    int i; 
-
     // component constructor
     extern function new(string name = "AHB_UVC_master_monitor_c", uvm_component parent);
 
@@ -62,7 +57,7 @@ function void AHB_UVC_master_monitor_c::build_phase(uvm_phase phase);
     item_collected_port = new("item_collected_port",this);
     if(!uvm_config_db#(virtual AHB_UVC_interface)::get(this,"","uvc_if",uvc_if))
       `uvm_error(get_type_name(),"Not able to get the interface");
-    //trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
+      trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
 endfunction : build_phase
 
 //////////////////////////////////////////////////////////////////
@@ -83,23 +78,28 @@ endfunction : connect_phase
 // Description        : post build/connect phase
 //////////////////////////////////////////////////////////////////
 task AHB_UVC_master_monitor_c::run_phase(uvm_phase phase);
-    super.run_phase(phase);
-    `uvm_info(get_type_name(), "run phase", UVM_HIGH)
-    first_beat  = 1'b1;
+  super.run_phase(phase);
+  `uvm_info(get_type_name(), "run phase", UVM_HIGH)
+  forever begin
+    @(`MSTR_DRV_CB);
+    fork 
+      begin
+        wait(!uvc_if.hresetn); 
+      end
 
-    forever begin
-       trans_h = AHB_UVC_master_transaction_c::type_id::create("trans_h");
-       @(`MSTR_MON_CB);
-       ++i;
-       fork
-         address_phase();
-         begin
-            if(!first_beat && `MSTR_MON_CB.Hready_out)begin
-              data_phase();
-            end
-         end
-       join_none
-    end
+      begin
+        forever begin
+          @(`MSTR_DRV_CB);
+          fork 
+            address_phase();
+            data_phase(); 
+          join_any
+        end
+      end
+    join_any
+    disable fork;
+    wait(uvc_if.hresetn);
+  end
 endtask : run_phase
 
 task AHB_UVC_master_monitor_c::address_phase();
@@ -107,13 +107,13 @@ task AHB_UVC_master_monitor_c::address_phase();
   trans_h.hwrite      = `MSTR_MON_CB.Hwrite;
   trans_h.hburst_type = hburst_enum'(`MSTR_MON_CB.Hburst);
   trans_h.hsize_type  = hsize_enum'(`MSTR_MON_CB.Hsize);
-  first_beat = 1'b0;
 endtask : address_phase
 
 task AHB_UVC_master_monitor_c::data_phase();
-  trans_h.hwdata = '{`MSTR_MON_CB.Hwdata};
+  @(`MSTR_DRV_CB);
+    trans_h.hwdata = '{`MSTR_MON_CB.Hwdata};
 
-  if(`MSTR_MON_CB.Hready_out)
-     item_collected_port.write(trans_h);
-  //trans_h.print();
+    if((`MSTR_MON_CB.Hready_out) && (`MSTR_MON_CB.Htrans != 00) && (`MSTR_MON_CB.Htrans != 01))
+      item_collected_port.write(trans_h);
+    //trans_h.print();
 endtask : data_phase

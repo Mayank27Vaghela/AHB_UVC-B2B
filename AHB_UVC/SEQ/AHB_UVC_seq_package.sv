@@ -22,6 +22,7 @@ package AHB_UVC_seq_package;
   `include "AHB_UVC_master_single_burst_seq.sv"
   `include "AHB_UVC_master_wrap_burst_seq.sv"
   `include "AHB_UVC_master_incr_burst_seq.sv"
+  `include "AHB_UVC_master_undefined_len_incr_burst_seq.sv"  
   `include "AHB_UVC_master_hsize_err_seq.sv"
   `include "AHB_UVC_master_hburst_err_seq.sv"
   `include "AHB_UVC_master_x_signal_err_seq.sv"
